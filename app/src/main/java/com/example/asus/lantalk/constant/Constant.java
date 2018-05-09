@@ -1,4 +1,4 @@
-package com.example.asus.lantalk.Constant;
+package com.example.asus.lantalk.constant;
 
 /**
  * Created by asus on 18-5-8.
