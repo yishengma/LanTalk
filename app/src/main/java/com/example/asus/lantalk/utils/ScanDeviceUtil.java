@@ -182,7 +182,7 @@ public class ScanDeviceUtil {
         }
         return null;
     }
-    public static String getIPAddress(){
+    public static String getIPAddressString(){
         String IPAddress = null;
         try{
             Enumeration enumeration = NetworkInterface.getNetworkInterfaces();
@@ -207,10 +207,36 @@ public class ScanDeviceUtil {
         }catch (SocketException e){
             e.printStackTrace();
         }
-        Log.e(TAG, "getIPAddress: "+IPAddress );
         return IPAddress;
     }
+    public static Inet4Address getIPAddress(){
+        Inet4Address IPAddress = null;
+        try{
+            Enumeration enumeration = NetworkInterface.getNetworkInterfaces();
+            InetAddress inetAddress = null;
+            while (enumeration.hasMoreElements()){
+                NetworkInterface networkInterface = (NetworkInterface) enumeration.nextElement();
+                Enumeration<InetAddress> inetAddressEnumeration = networkInterface.getInetAddresses();
+                while (inetAddressEnumeration.hasMoreElements()){
+                    inetAddress = inetAddressEnumeration.nextElement();
+                    if (inetAddress instanceof Inet6Address){
+                        continue;
+                    }
+                    String ip = inetAddress.getHostAddress();
+                    if (!sLOCAL_HOST_IP.equals(ip)){
+                        IPAddress = (Inet4Address) inetAddress;
 
+                        break;
+                    }
+
+
+                }
+            }
+        }catch (SocketException e){
+            e.printStackTrace();
+        }
+        return IPAddress;
+    }
     public static String getLocalIPAddress(){
         String localIPAddress = "";
         try {

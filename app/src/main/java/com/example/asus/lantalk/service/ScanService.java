@@ -5,10 +5,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
-import android.util.Log;
 
-import com.example.asus.lantalk.entity.DeviceBean;
 import com.example.asus.lantalk.utils.ScanDeviceUtil;
 
 import java.util.ArrayList;
@@ -20,7 +17,7 @@ import java.util.List;
 
 public class ScanService extends Service {
     private List<String> mStringList;
-    private DeviceBinder mBinder = new DeviceBinder();
+    private PeerBinder mBinder = new PeerBinder();
     private static final String TAG = "ScanService";
     @Nullable
     @Override
@@ -36,7 +33,7 @@ public class ScanService extends Service {
     }
 
 
-  public   class DeviceBinder extends Binder{
+  public   class PeerBinder extends Binder{
 
         public List<String> getIPList(){
             return mStringList;

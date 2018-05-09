@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by asus on 18-5-9.
  */
 
-public class DeviceBean implements Serializable{
+public class PeerBean implements Serializable{
     private String mName;
     private String mLocalIP;
     private String mPeerIP;

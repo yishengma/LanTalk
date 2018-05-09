@@ -10,33 +10,32 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 
 import com.example.asus.lantalk.R;
 import com.example.asus.lantalk.adapter.DeviceAdapter;
-import com.example.asus.lantalk.entity.DeviceBean;
+import com.example.asus.lantalk.entity.PeerBean;
 import com.example.asus.lantalk.service.ScanService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    List<DeviceBean> mDeviceBeanList;
+    List<PeerBean> mPeerBeanList;
     private DeviceAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private static final String TAG = "MainActivity";
-    private ScanService.DeviceBinder mBinder;
+    private ScanService.PeerBinder mBinder;
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            mBinder = (ScanService.DeviceBinder)iBinder;
+            mBinder = (ScanService.PeerBinder)iBinder;
             List<String> mBinderIPList = mBinder.getIPList();
             int size = mBinderIPList.size();
             Log.e(TAG, "onServiceConnected: "+size );
             for (int i=0;i<size;i++){
-                DeviceBean deviceBean = new DeviceBean();
-                deviceBean.setPeerIP(mBinderIPList.get(i));
-                mDeviceBeanList.add(deviceBean);
+                PeerBean peerBean = new PeerBean();
+                peerBean.setPeerIP(mBinderIPList.get(i));
+                mPeerBeanList.add(peerBean);
             }
             mAdapter.notifyDataSetChanged();
         }
@@ -51,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mDeviceBeanList = new ArrayList<>();
-        mAdapter = new DeviceAdapter(mDeviceBeanList);
+        mPeerBeanList = new ArrayList<>();
+        mAdapter = new DeviceAdapter(mPeerBeanList);
         mRecyclerView = findViewById(R.id.rv_devices);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mAdapter);
@@ -63,6 +62,13 @@ public class MainActivity extends AppCompatActivity {
                 bindService(intent,mServiceConnection,BIND_AUTO_CREATE);
 
 
+            }
+        });
+
+        mAdapter.setOnClickListener(new DeviceAdapter.OnClickListener() {
+            @Override
+            public void OnClick(PeerBean peerBean) {
+                TalkActivity.actionStart(MainActivity.this,peerBean.getPeerIP());
             }
         });
     }

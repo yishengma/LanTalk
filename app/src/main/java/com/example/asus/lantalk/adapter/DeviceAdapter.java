@@ -1,14 +1,13 @@
 package com.example.asus.lantalk.adapter;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.asus.lantalk.R;
-import com.example.asus.lantalk.entity.DeviceBean;
+import com.example.asus.lantalk.entity.PeerBean;
 
 import java.util.List;
 
@@ -17,7 +16,7 @@ import java.util.List;
  */
 
 public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder>{
-    private List<DeviceBean> mDeviceBeans;
+    private List<PeerBean> mPeerBeans;
     private static final String TAG = "DeviceAdapter";
     private OnClickListener mOnClickListener;
 
@@ -26,10 +25,10 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
     }
 
     public interface OnClickListener{
-        void OnClick(DeviceBean deviceBean);
+        void OnClick(PeerBean peerBean);
     }
-    public DeviceAdapter(List<DeviceBean> deviceBeans) {
-        mDeviceBeans = deviceBeans;
+    public DeviceAdapter(List<PeerBean> peerBeans) {
+        mPeerBeans = peerBeans;
     }
 
     @Override
@@ -41,13 +40,13 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-           final DeviceBean deviceBean = mDeviceBeans.get(position);
-           holder.mName.setText(deviceBean.getPeerIP());
+           final PeerBean peerBean = mPeerBeans.get(position);
+           holder.mName.setText(peerBean.getPeerIP());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mOnClickListener!=null){
-                    mOnClickListener.OnClick(deviceBean);
+                    mOnClickListener.OnClick(peerBean);
                 }
             }
         });
@@ -56,7 +55,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return mDeviceBeans.size();
+        return mPeerBeans.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{
