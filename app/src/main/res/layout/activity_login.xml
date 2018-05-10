@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    tools:context="com.example.asus.lantalk.ui.LoginActivity">
+
+     <ImageView
+    android:src="@drawable/iv_logo"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="@dimen/dimen_margin_top_image"
+    android:layout_width="@dimen/dimen_size_image"
+    android:layout_height="@dimen/dimen_size_image" />
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dimen_margin_top_name"
+        android:text="@string/p2p_lantalk"
+        android:textColor="@color/color_white_text"
+        android:textSize="@dimen/dimen_size_name"
+        android:textStyle="bold" />
+
+
+    <EditText
+        android:id="@+id/et_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_name"
+        android:layout_marginLeft="@dimen/dimen_margin_login"
+        android:layout_marginRight="@dimen/dimen_margin_login"
+        android:layout_marginTop="@dimen/dimen_margin_top_et"
+        android:drawableLeft="@drawable/iv_user_name"
+        android:hint="@string/hint"
+        android:imeOptions="actionNext"
+        android:maxLength="11"
+        android:maxLines="1"
+        android:theme="@style/EditTextStyle"
+        android:textColor="@color/color_white_text" />
+    <View
+        android:layout_below="@+id/et_name"
+        android:layout_width="match_parent"
+        android:background="@color/color_white_hint"
+        android:layout_marginLeft="@dimen/dimen_margin_login"
+        android:layout_marginRight="@dimen/dimen_margin_login"
+        android:layout_height="1dp"/>
+
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_marginTop="@dimen/dimen_margin_top_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_name"
+        android:layout_marginLeft="@dimen/dimen_margin_login"
+        android:layout_marginRight="@dimen/dimen_margin_login"
+        android:background="@color/color_btn_login"
+        android:text="@string/login"
+        android:textColor="@color/color_white_text"
+        android:textSize="@dimen/dimen_size_login" />
+
+    <TextView
+        android:textColor="@color/color_white_text"
+        android:layout_below="@+id/btn_login"
+        android:gravity="bottom"
+        android:paddingBottom="@dimen/dimen_padding_bottom_introduction"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:textSize="@dimen/dimen_size_introduction"
+        android:text="@string/introduction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>

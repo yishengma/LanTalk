@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="dimen_margin_login" >30dp</dimen>
+    <dimen name="dimen_size_name">40sp</dimen>
+    <dimen name="dimen_size_introduction">13sp</dimen>
+    <dimen name="dimen_size_login">18sp</dimen>
+
+    <dimen name="dimen_margin_top_image">90dp</dimen>
+    <dimen name="dimen_size_image">60dp</dimen>
+
+    <dimen name="dimen_margin_top_name">150dp</dimen>
+    <dimen name="dimen_margin_top_login">30dp</dimen>
+    <dimen name="dimen_padding_bottom_introduction">30dp</dimen>
+    <dimen name="dimen_margin_top_et">100dp</dimen>
+
+</resources>

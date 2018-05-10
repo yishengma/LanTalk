@@ -20,7 +20,8 @@ import static com.example.asus.lantalk.constant.Constant.SERVER_PORT;
 
 public class App extends Application {
     private Socket mSocket;
-
+    public static String sName;
+    public static String sIP;
     private ServerSocket mServerSocket;
     ObjectInputStream is;
     private static final String TAG = "App";

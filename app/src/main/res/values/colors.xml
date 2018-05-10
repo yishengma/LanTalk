@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#2d3e56</color>
+    <color name="colorPrimaryDark">#2e3f57</color>
+    <color name="colorAccent">#2b2b2b</color>
 
     <drawable name="drawableItemBackground">#fdfdfe</drawable>
     <drawable name="drawableItemPressed">#d8d8d8</drawable>
+
+
+    <color name="color_white_login">#fdfdfe</color>
+    <color name="color_white_hint">#b4fdfdfe</color>
+    <color name="color_text_login">#2d3e56</color>
+    <color name="color_btn_login">#01989c</color>
+
+    <color name="color_deepBlue_bar">#2d3e56</color>
+    <color name="color_white_text">#fdfdfe</color>
 </resources>

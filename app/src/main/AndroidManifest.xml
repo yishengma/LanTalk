@@ -29,17 +29,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.MainActivity">
+
+        </activity>
+
+        <service android:name=".service.ScanService" />
+        <service android:name=".service.SendIntentService" />
+
+        <activity android:name=".ui.TalkActivity" />
+        <activity android:name=".ui.LoginActivity"
+            android:theme="@style/LoginTheme"
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <service android:name=".service.ScanService" />
-        <service android:name=".service.SendIntentService" />
-
-        <activity android:name=".ui.TalkActivity"></activity>
     </application>
 
 </manifest>

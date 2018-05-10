@@ -28,9 +28,9 @@ public class SendIntentService extends IntentService {
     public SendIntentService(String name) {
         super(name);
     }
-    public SendIntentService() {
-        super("SendIntentService");
-    }
+
+
+
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         if (intent.getAction().equals(ACTION_SEND_FILE)){
