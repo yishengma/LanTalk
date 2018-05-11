@@ -11,7 +11,7 @@
         android:layout_gravity="center_horizontal"
         android:textSize="12sp"
         android:padding="2dp"
-
+         android:textColor="@color/color_white_text"
 
         android:text="2012-09-01 18:30:21" />
 
@@ -42,6 +42,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="用户名"
+                android:textColor="@color/color_white_text"
+
                 android:textSize="14sp"/>
         </LinearLayout>
 
@@ -57,9 +59,8 @@
             android:minHeight="40dp"
             android:paddingRight="10dp"
             android:paddingLeft="5dp"
-            android:paddingBottom="10dp"
             android:layout_marginLeft="10dp"
-            android:textColor="#000"
+            android:textColor="@color/color_white_text"
             android:textSize="16sp" />
     </RelativeLayout>
 

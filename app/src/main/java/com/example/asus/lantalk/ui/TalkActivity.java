@@ -61,7 +61,7 @@ public class TalkActivity extends AppCompatActivity {
     private void initView(){
         mName = findViewById(R.id.tv_name);
         mName.setText(getIntent().getStringExtra(SEND_PEER_BEAN));
-        mRvMsgContent = findViewById(R.id.rv_content);
+        mRvMsgContent = findViewById(R.id.rv_msg_content);
         mEditText = findViewById(R.id.et_input);
         mSendButton  = findViewById(R.id.btn_send);
         mBeanList = new ArrayList<>();
@@ -75,13 +75,14 @@ public class TalkActivity extends AppCompatActivity {
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              if (!TextUtils.isEmpty(mEditText.getText().toString())){
                   SocketBean socketBean = new SocketBean();
                   socketBean.setName("mine");
                   socketBean.setMessage(mEditText.getText().toString());
                   socketBean.setTime("2018-3-3");
                   socketBean.setType(Constant.MINE);
-              }
+                  mBeanList.add(socketBean);
+                  mAdapter.notifyDataSetChanged();
+
             }
         });
     }
@@ -101,6 +102,8 @@ public class TalkActivity extends AppCompatActivity {
                 socketBean.setMessage(mEditText.getText().toString());
                 socketBean.setTime("2018-3-3");
                 socketBean.setType(Constant.PEER);
+                mBeanList.add(socketBean);
+                mAdapter.notifyDataSetChanged();
             }
             break;
 

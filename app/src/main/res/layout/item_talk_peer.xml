@@ -11,6 +11,8 @@
         android:text="2012-09-01 18:30:20"
         android:textSize="12sp"
         android:padding="2dp"
+        android:textColor="@color/color_white_text"
+
         android:layout_gravity="center_horizontal"/>
 
     <LinearLayout
@@ -39,6 +41,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="用户"
+                android:textColor="@color/color_white_text"
+
                 android:textSize="14sp" />
         </LinearLayout>
 
@@ -51,7 +55,7 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:textSize="16sp"
-            android:textColor="#000"
+            android:textColor="@color/color_white_text"
             android:gravity="center_vertical"
             android:layout_marginRight="10dp"
             android:focusable="true"

@@ -34,10 +34,10 @@
         <service android:name=".service.SendIntentService" />
 
         <activity android:name=".ui.TalkActivity"
-            android:windowSoftInputMode="stateHidden"/>
+           />
         <activity android:name=".ui.LoginActivity"
             android:theme="@style/LoginTheme"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="adjustPan">
 
         </activity>
     </application>
