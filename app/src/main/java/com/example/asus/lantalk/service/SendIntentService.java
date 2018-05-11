@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.example.asus.lantalk.entity.PeerBean;
+import com.example.asus.lantalk.entity.SocketBean;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -36,13 +36,13 @@ public class SendIntentService extends IntentService {
         if (intent.getAction().equals(ACTION_SEND_FILE)){
 
         }else if (intent.getAction().equals(ACTION_SEND_MSG)){
-              PeerBean peerBean = (PeerBean) intent.getSerializableExtra(SEND_PEER_BEAN);
-               send(peerBean);
+              SocketBean socketBean = (SocketBean) intent.getSerializableExtra(SEND_PEER_BEAN);
+               send(socketBean);
         }
 
     }
 
-    public void send(final PeerBean peerBean){
+    public void send(final SocketBean socketBean){
 
         new Thread(new Runnable() {
             @Override
@@ -50,9 +50,9 @@ public class SendIntentService extends IntentService {
                 Socket socket = new Socket();
                 try {
                     socket.bind(null);
-                    socket.connect((new InetSocketAddress(peerBean.getPeerIP(), SERVER_PORT)), 3000);
+                    socket.connect((new InetSocketAddress(socketBean.getPeerIP(), SERVER_PORT)), 3000);
                     ObjectOutputStream os  = new ObjectOutputStream(socket.getOutputStream());
-                    os.writeObject(peerBean);
+                    os.writeObject(socketBean);
                     os.flush();
                 } catch (IOException e) {
                     Log.e(TAG, e.getMessage());

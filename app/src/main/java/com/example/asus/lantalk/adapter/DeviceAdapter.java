@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.asus.lantalk.R;
-import com.example.asus.lantalk.entity.PeerBean;
+import com.example.asus.lantalk.entity.SocketBean;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import java.util.List;
  */
 
 public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder>{
-    private List<PeerBean> mPeerBeans;
+    private List<SocketBean> mSocketBeans;
     private static final String TAG = "DeviceAdapter";
     private OnClickListener mOnClickListener;
 
@@ -25,10 +25,10 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
     }
 
     public interface OnClickListener{
-        void OnClick(PeerBean peerBean);
+        void OnClick(SocketBean socketBean);
     }
-    public DeviceAdapter(List<PeerBean> peerBeans) {
-        mPeerBeans = peerBeans;
+    public DeviceAdapter(List<SocketBean> socketBeans) {
+        mSocketBeans = socketBeans;
     }
 
     @Override
@@ -40,13 +40,13 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-           final PeerBean peerBean = mPeerBeans.get(position);
-           holder.mName.setText(peerBean.getPeerIP());
+           final SocketBean socketBean = mSocketBeans.get(position);
+           holder.mName.setText(socketBean.getPeerIP());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mOnClickListener!=null){
-                    mOnClickListener.OnClick(peerBean);
+                    mOnClickListener.OnClick(socketBean);
                 }
             }
         });
@@ -55,7 +55,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return mPeerBeans.size();
+        return mSocketBeans.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{

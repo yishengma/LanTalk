@@ -27,4 +27,9 @@ public class Constant {
 public static final String SEND_PEER_BEAN = "send";
 
 
+
+public static final int MINE = 0;
+public static final int PEER = 1;
+
+
 }

@@ -3,6 +3,8 @@ package com.example.asus.lantalk.utils;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.example.asus.OnScanListener;
+
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -36,6 +38,11 @@ public class ScanDeviceUtil {
     private static String mPing = "ping -c 1 -w 3 ";// 其中 -c 1为发送的次数，-w 表示发送后等待响应的时间
     private static List<String> mIpList = new ArrayList<String>();// ping成功的IP地址
     private static ThreadPoolExecutor mExecutor;// 线程池对象
+    private static OnScanListener onScanListener;
+
+    public static void setOnScanListener(OnScanListener onScanListener) {
+        ScanDeviceUtil.onScanListener = onScanListener;
+    }
 
     /**
      * TODO<扫描局域网内ip，找到对应服务器>
@@ -63,7 +70,7 @@ public class ScanDeviceUtil {
                 CORE_POOL_SIZE));
 
         // 新建线程池
-        for (int i = 1; i < 255; i++) {
+        for (int i = 2; i < 255; i++) {
             // 创建256个线程分别去ping
             final int lastAddress = i;// 存放ip最后一位地址 1-255
             Runnable run = new Runnable() {
@@ -80,12 +87,11 @@ public class ScanDeviceUtil {
                     try {
 
                         mProcess = mRun.exec(ping);
-
                         int result = mProcess.waitFor();
                         Log.d(TAG, "正在扫描的IP地址为：" + currnetIp + "返回值为：" + result);
                         if (result == 0) {
                             Log.d(TAG, "扫描成功,Ip地址为：" + currnetIp);
-                            Log.e(TAG, "run: "+currnetIp );
+
                             mIpList.add(currnetIp);
                         } else {
                             // 扫描失败
@@ -93,6 +99,10 @@ public class ScanDeviceUtil {
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "扫描异常" + e.toString());
+                        if (onScanListener!=null){
+                            onScanListener.OnFailed();
+                        }
+
                     } finally {
                         if (mProcess != null)
                             mProcess.destroy();
@@ -109,10 +119,16 @@ public class ScanDeviceUtil {
             try {
                 if (mExecutor.isTerminated()) {// 扫描结束,开始验证
                     Log.d(TAG, "扫描结束,总共成功扫描到" + mIpList.size() + "个设备.");
+                    if (onScanListener!=null){
+                        onScanListener.OnSuccessed(mIpList.size());
+                    }
                     break;
                 }
             } catch (Exception e) {
                 // TODO: handle exception
+                if (onScanListener!=null){
+                    onScanListener.OnFailed();
+                }
             }
             try {
                 Thread.sleep(1000);
@@ -129,7 +145,7 @@ public class ScanDeviceUtil {
      *
      * @return void
      */
-    public void destory() {
+    public static void destory() {
         if (mExecutor != null) {
             mExecutor.shutdownNow();
         }

@@ -1,14 +1,11 @@
 package com.example.asus.lantalk.app;
 
 import android.app.Application;
-import android.util.Log;
 
-import com.example.asus.lantalk.entity.PeerBean;
+import com.example.asus.lantalk.entity.SocketBean;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -40,7 +37,6 @@ public class App extends Application {
          new Thread(new Runnable() {
              @Override
              public void run() {
-                 Log.e(TAG, "run: " );
                  try {
                      mServerSocket = new ServerSocket(SERVER_PORT);
                      while (true) {
@@ -48,8 +44,7 @@ public class App extends Application {
                          is = new ObjectInputStream(mSocket.getInputStream());
                         Object object = is.readObject();
 
-                        PeerBean socketBeen = (PeerBean) object;
-                         Log.e(TAG, "run: " + socketBeen.getMessage());
+                        SocketBean socketBeen = (SocketBean) object;
                      }
 
 

@@ -6,13 +6,22 @@ import java.io.Serializable;
  * Created by asus on 18-5-9.
  */
 
-public class PeerBean implements Serializable{
+public class SocketBean implements Serializable{
     private String mName;
     private String mLocalIP;
     private String mPeerIP;
     private String mMessage;
     private String mTime;
     private String mStatus;
+    private int mType;
+
+    public int getType() {
+        return mType;
+    }
+
+    public void setType(int type) {
+        mType = type;
+    }
 
     public String getName() {
         return mName == null ? "" : mName;

@@ -16,18 +16,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.asus.OnScanListener;
 import com.example.asus.lantalk.R;
 import com.example.asus.lantalk.adapter.DeviceAdapter;
-import com.example.asus.lantalk.entity.PeerBean;
+import com.example.asus.lantalk.entity.SocketBean;
 import com.example.asus.lantalk.service.ScanService;
+import com.example.asus.lantalk.utils.LoadingDialogUtil;
 import com.example.asus.lantalk.utils.NetWorkUtil;
+import com.example.asus.lantalk.utils.ScanDeviceUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private Toolbar mToolbar;
-    private List<PeerBean> mPeerBeanList;
+    private List<SocketBean> mSocketBeanList;
     private DeviceAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private static final String TAG = "MainActivity";
@@ -40,9 +43,9 @@ public class MainActivity extends AppCompatActivity {
             int size = mBinderIPList.size();
             Log.e(TAG, "onServiceConnected: " + size);
             for (int i = 0; i < size; i++) {
-                PeerBean peerBean = new PeerBean();
-                peerBean.setPeerIP(mBinderIPList.get(i));
-                mPeerBeanList.add(peerBean);
+                SocketBean socketBean = new SocketBean();
+                socketBean.setPeerIP(mBinderIPList.get(i));
+                mSocketBeanList.add(socketBean);
             }
             mAdapter.notifyDataSetChanged();
         }
@@ -57,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mPeerBeanList = new ArrayList<>();
-        mAdapter = new DeviceAdapter(mPeerBeanList);
+        mSocketBeanList = new ArrayList<>();
+        mAdapter = new DeviceAdapter(mSocketBeanList);
         mRecyclerView = findViewById(R.id.rv_devices);
         mToolbar = findViewById(R.id.tool_bar);
         setSupportActionBar(mToolbar);
@@ -68,10 +71,34 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter.setOnClickListener(new DeviceAdapter.OnClickListener() {
             @Override
-            public void OnClick(PeerBean peerBean) {
-                TalkActivity.actionStart(MainActivity.this, peerBean.getPeerIP());
+            public void OnClick(SocketBean socketBean) {
+                TalkActivity.actionStart(MainActivity.this, socketBean.getPeerIP());
             }
         });
+
+//        LoadingDialogUtil.createLoadingDialog(this,"正在搜索对等方");
+        ScanDeviceUtil.setOnScanListener(new OnScanListener() {
+            @Override
+            public void OnSuccessed(int i) {
+                LoadingDialogUtil.closeDialog();
+              Toast.makeText(MainActivity.this,"共搜索到"+i+"个对等方!",Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void OnFailed() {
+                LoadingDialogUtil.closeDialog();
+
+                Toast.makeText(MainActivity.this,"搜索失败!",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+//        if (NetWorkUtil.isNetworkConnected(this) && NetWorkUtil.isWifiConnected(this)) {
+//            Intent intent = new Intent(MainActivity.this, ScanService.class);
+//            bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
+//        } else {
+//            Toast.makeText(this, "请打开WiFi连接！", Toast.LENGTH_SHORT).show();
+//        }
     }
 
 
@@ -89,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.menu_search:
                 if (NetWorkUtil.isNetworkConnected(this) && NetWorkUtil.isWifiConnected(this)) {
+                    LoadingDialogUtil.createLoadingDialog(MainActivity.this,"正在搜索对等方！");
                     Intent intent = new Intent(MainActivity.this, ScanService.class);
                     bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
                 } else {
