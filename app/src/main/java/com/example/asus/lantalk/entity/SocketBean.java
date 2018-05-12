@@ -7,13 +7,16 @@ import java.io.Serializable;
  */
 
 public class SocketBean implements Serializable{
-    private String mName;
-    private String mLocalIP;
-    private String mPeerIP;
+    private String mSendName;
+    private String mSendIP;
+    private String mReceiveName;
+    private String mReceiveIP;
     private String mMessage;
     private String mTime;
-    private String mStatus;
+    private int mStatus;
     private int mType;
+
+
 
     public int getType() {
         return mType;
@@ -23,28 +26,37 @@ public class SocketBean implements Serializable{
         mType = type;
     }
 
-    public String getName() {
-        return mName == null ? "" : mName;
+
+    public String getSendName() {
+        return mSendName == null ? "" : mSendName;
     }
 
-    public void setName(String name) {
-        mName = name;
+    public void setSendName(String sendName) {
+        mSendName = sendName;
     }
 
-    public String getLocalIP() {
-        return mLocalIP == null ? "" : mLocalIP;
+    public String getSendIP() {
+        return mSendIP == null ? "" : mSendIP;
     }
 
-    public void setLocalIP(String localIP) {
-        mLocalIP = localIP;
+    public void setSendIP(String sendIP) {
+        mSendIP = sendIP;
     }
 
-    public String getPeerIP() {
-        return mPeerIP == null ? "" : mPeerIP;
+    public String getReceiveName() {
+        return mReceiveName == null ? "" : mReceiveName;
     }
 
-    public void setPeerIP(String peerIP) {
-        mPeerIP = peerIP;
+    public void setReceiveName(String receiveName) {
+        mReceiveName = receiveName;
+    }
+
+    public String getReceiveIP() {
+        return mReceiveIP == null ? "" : mReceiveIP;
+    }
+
+    public void setReceiveIP(String receiveIP) {
+        mReceiveIP = receiveIP;
     }
 
     public String getMessage() {
@@ -63,11 +75,11 @@ public class SocketBean implements Serializable{
         mTime = time;
     }
 
-    public String getStatus() {
-        return mStatus == null ? "" : mStatus;
+    public int getStatus() {
+        return mStatus;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         mStatus = status;
     }
 }

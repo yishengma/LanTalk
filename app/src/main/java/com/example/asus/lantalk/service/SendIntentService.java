@@ -23,6 +23,19 @@ import static com.example.asus.lantalk.constant.Constant.SERVER_PORT;
 
 public class SendIntentService extends IntentService {
     private static final String TAG = "SendIntentService";
+    private static OnSendListener mSendListener;
+
+    public static void setSendListener(OnSendListener sendListener) {
+        mSendListener = sendListener;
+    }
+
+    public interface OnSendListener {
+        void OnFail();
+    }
+
+    public SendIntentService() {
+        super("SendIntentService");
+    }
 
 
     public SendIntentService(String name) {
@@ -30,19 +43,18 @@ public class SendIntentService extends IntentService {
     }
 
 
-
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        if (intent.getAction().equals(ACTION_SEND_FILE)){
+        if (intent.getAction().equals(ACTION_SEND_FILE)) {
 
-        }else if (intent.getAction().equals(ACTION_SEND_MSG)){
-              SocketBean socketBean = (SocketBean) intent.getSerializableExtra(SEND_PEER_BEAN);
-               send(socketBean);
+        } else if (intent.getAction().equals(ACTION_SEND_MSG)) {
+            SocketBean socketBean = (SocketBean) intent.getSerializableExtra(SEND_PEER_BEAN);
+            send(socketBean);
         }
 
     }
 
-    public void send(final SocketBean socketBean){
+    public void send(final SocketBean socketBean) {
 
         new Thread(new Runnable() {
             @Override
@@ -50,12 +62,15 @@ public class SendIntentService extends IntentService {
                 Socket socket = new Socket();
                 try {
                     socket.bind(null);
-                    socket.connect((new InetSocketAddress(socketBean.getPeerIP(), SERVER_PORT)), 3000);
-                    ObjectOutputStream os  = new ObjectOutputStream(socket.getOutputStream());
+                    socket.connect((new InetSocketAddress(socketBean.getReceiveIP(), SERVER_PORT)), 3000);
+                    ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
                     os.writeObject(socketBean);
                     os.flush();
+
                 } catch (IOException e) {
-                    Log.e(TAG, e.getMessage());
+                    if (mSendListener!=null){
+                        mSendListener.OnFail();
+                    }
                 } finally {
                     if (socket != null) {
                         if (socket.isConnected()) {

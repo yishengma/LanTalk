@@ -38,11 +38,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         SocketBean bean = mBeans.get(position);
         if (holder instanceof MessageMine) {
-            ((MessageMine)holder).mNameTextView.setText(bean.getName());
+            ((MessageMine)holder).mNameTextView.setText(bean.getSendName());
             ((MessageMine)holder).mMsgTextView.setText(bean.getMessage());
             ((MessageMine)holder).mTimeTextView.setText(bean.getTime());
         }else if (holder instanceof  MessagePeer){
-            ((MessagePeer)holder).mNameTextView.setText(bean.getName());
+            ((MessagePeer)holder).mNameTextView.setText(bean.getSendName());
             ((MessagePeer)holder).mMsgTextView.setText(bean.getMessage());
             ((MessagePeer)holder).mTimeTextView.setText(bean.getTime());
         }

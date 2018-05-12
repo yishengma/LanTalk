@@ -41,7 +41,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
            final SocketBean socketBean = mSocketBeans.get(position);
-           holder.mName.setText(socketBean.getPeerIP());
+           holder.mName.setText(socketBean.getReceiveIP());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

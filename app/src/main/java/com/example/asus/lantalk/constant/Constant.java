@@ -9,27 +9,27 @@ public class Constant {
 
     public static final int SERVER_PORT = 3333;
 
-    public static final   int PROTOCOL_LEN = 2;
-
-    public static final   String MSG_ROUND = "$Y";
-    public static final  String USER_ROUND = "Π%";
-    public static final  String LOGIN_SUCCESS = "1";
-    public static final  String NAME_RPE = "-1";
-    public static final  String PRIVATE_ROUND = "@%";
-    public static final String SPLIT_SIGN = "##";
-
-
-
     public static final String ACTION_SEND_FILE = "com.example.android.wifidirect.SEND_FILE";
     public static final String ACTION_SEND_MSG = "com.example.android.wifidirect.SEND_MSG";
 
 
-public static final String SEND_PEER_BEAN = "send";
+    public static final String SEND_PEER_BEAN = "send";
+
+
+    public static final int MINE = 0;
+    public static final int PEER = 1;
+
+
+    public static final String ONLINE = "online";
+    public static final String CONNECTED = "connected";
+    public static final String OFFLINE = "offline";
 
 
 
-public static final int MINE = 0;
-public static final int PEER = 1;
+    public static final int REQUEST = 0;
+    public static final int CONNECT = 1;
+    public static final int REFUSE = 2;
+    public static final int RECEIVE = 3;
 
 
 }

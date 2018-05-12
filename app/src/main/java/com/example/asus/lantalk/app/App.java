@@ -1,8 +1,12 @@
 package com.example.asus.lantalk.app;
 
 import android.app.Application;
+import android.content.Intent;
+import android.util.Log;
 
+import com.example.asus.lantalk.constant.Constant;
 import com.example.asus.lantalk.entity.SocketBean;
+import com.example.asus.lantalk.service.ReceiveService;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,46 +20,19 @@ import static com.example.asus.lantalk.constant.Constant.SERVER_PORT;
  */
 
 public class App extends Application {
-    private Socket mSocket;
     public static String sName;
     public static String sIP;
-    private ServerSocket mServerSocket;
-    ObjectInputStream is;
-    private static final String TAG = "App";
+
 
     @Override
     public void onCreate() {
         super.onCreate();
-        initServer();
 
+         Intent intent = new Intent(getApplicationContext(),ReceiveService.class);
+         startService(intent);
 
     }
 
-
-
-    public void initServer() {
-         new Thread(new Runnable() {
-             @Override
-             public void run() {
-                 try {
-                     mServerSocket = new ServerSocket(SERVER_PORT);
-                     while (true) {
-                         mSocket = mServerSocket.accept();
-                         is = new ObjectInputStream(mSocket.getInputStream());
-                        Object object = is.readObject();
-
-                        SocketBean socketBeen = (SocketBean) object;
-                     }
-
-
-                 } catch (IOException e) {
-                     e.printStackTrace();
-                 } catch (ClassNotFoundException e) {
-                     e.printStackTrace();
-                 }
-             }
-         }).start();
-    }
 
 
 
