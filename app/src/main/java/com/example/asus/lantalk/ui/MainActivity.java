@@ -195,7 +195,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void OnFail() {
+    public void onSendSuccess() {
+
+    }
+
+    @Override
+    public void onSendFail() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -203,7 +208,6 @@ public class MainActivity extends AppCompatActivity
                 LoadingDialogUtil.closeDialog();
             }
         });
-
     }
 
     @Override

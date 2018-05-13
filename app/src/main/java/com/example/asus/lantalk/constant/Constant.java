@@ -32,4 +32,7 @@ public class Constant {
     public static final int RECEIVE = 3;
 
 
+    public static final int sCHOOSEALBUM = 0;
+
+
 }

@@ -1,6 +1,7 @@
 package com.example.asus.lantalk.app;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -22,6 +23,7 @@ import static com.example.asus.lantalk.constant.Constant.SERVER_PORT;
 public class App extends Application {
     public static String sName;
     public static String sIP;
+    private static  Context sContext;
 
 
     @Override
@@ -30,10 +32,11 @@ public class App extends Application {
 
          Intent intent = new Intent(getApplicationContext(),ReceiveService.class);
          startService(intent);
-
+         sContext = getApplicationContext();
     }
 
 
-
-
+    public static Context getsContext() {
+        return sContext;
+    }
 }

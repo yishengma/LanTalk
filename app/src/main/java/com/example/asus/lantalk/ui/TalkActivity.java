@@ -1,10 +1,20 @@
 package com.example.asus.lantalk.ui;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,13 +36,13 @@ import com.example.asus.lantalk.constant.Constant;
 import com.example.asus.lantalk.entity.SocketBean;
 import com.example.asus.lantalk.service.ReceiveService;
 import com.example.asus.lantalk.service.SendIntentService;
-import com.example.asus.lantalk.utils.LoadingDialogUtil;
 import com.example.asus.lantalk.utils.TimeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.asus.lantalk.constant.Constant.SEND_PEER_BEAN;
+import static com.example.asus.lantalk.constant.Constant.sCHOOSEALBUM;
 
 public class TalkActivity extends AppCompatActivity implements
         ReceiveService.OnReceiveListener,SendIntentService.OnSendListener{
@@ -44,6 +54,8 @@ public class TalkActivity extends AppCompatActivity implements
      private MessageAdapter mAdapter;
 
      private List<SocketBean> mBeanList;
+     private SocketBean mSocketBean;
+    private String mPhotoPath;//背景照的路径
 
 
 
@@ -90,19 +102,18 @@ public class TalkActivity extends AppCompatActivity implements
             public void onClick(View view) {
                if (!TextUtils.isEmpty(mEditText.getText().toString())){
                    Intent intent = new Intent(TalkActivity.this, SendIntentService.class);
-                   SocketBean socketBean = new SocketBean();
-                   socketBean.setReceiveIP(mName.getText().toString());
-                   socketBean.setMessage(mEditText.getText().toString());
-                   socketBean.setSendIP(App.sIP);
-                   socketBean.setSendName(App.sName);
-                   socketBean.setTime(TimeUtil.getCurrentTime());
+                   mSocketBean = new SocketBean();
+                   mSocketBean.setReceiveIP(mName.getText().toString());
+                   mSocketBean.setMessage(mEditText.getText().toString());
+                   mSocketBean.setSendIP(App.sIP);
+                   mSocketBean.setSendName(App.sName);
+                   mSocketBean.setTime(TimeUtil.getCurrentTime());
                    intent.setAction(Constant.ACTION_SEND_MSG);
-                   socketBean.setStatus(Constant.RECEIVE);
-                   socketBean.setType(Constant.MINE);
-                   intent.putExtra(SEND_PEER_BEAN, socketBean);
+                   mSocketBean.setStatus(Constant.RECEIVE);
+                   mSocketBean.setType(Constant.MINE);
+                   intent.putExtra(SEND_PEER_BEAN, mSocketBean);
                    startService(intent);
-                   mBeanList.add(socketBean);
-                   mAdapter.notifyDataSetChanged();
+
                }
 
             }
@@ -119,13 +130,15 @@ public class TalkActivity extends AppCompatActivity implements
             }
             break;
             case R.id.menu_picture:{
-                SocketBean socketBean = new SocketBean();
-                socketBean.setSendName("mine");
-                socketBean.setMessage(mEditText.getText().toString());
-                socketBean.setTime("2018-3-3");
-                socketBean.setType(Constant.PEER);
-                mBeanList.add(socketBean);
-                mAdapter.notifyDataSetChanged();
+                if (ContextCompat.checkSelfPermission(TalkActivity.this,
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(TalkActivity.this,
+                            new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                } else {
+                    Intent intent = new Intent(Intent.ACTION_PICK);
+                    intent.setType("image/");
+                    startActivityForResult(intent, sCHOOSEALBUM);
+                }
             }
             break;
 
@@ -134,6 +147,20 @@ public class TalkActivity extends AppCompatActivity implements
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+           switch (requestCode){
+               case sCHOOSEALBUM :
+                   if (requestCode==RESULT_OK){
+                       if (Build.VERSION.SDK_INT >= 19) {
+                           mPhotoPath = handleImageOnKitKat(data);
+                       } else {
+                           Uri uri = data.getData();
+                           mPhotoPath = getmImageFilePath(uri,null);
+                       }
+                   }
+           }
+    }
 
     @Override
     public void onReceiveCallBack(final SocketBean bean) {
@@ -143,6 +170,8 @@ public class TalkActivity extends AppCompatActivity implements
                 bean.setType(Constant.PEER);
                 mBeanList.add(bean);
                 mAdapter.notifyDataSetChanged();
+                mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount()-1);
+
             }
         });
     }
@@ -153,7 +182,20 @@ public class TalkActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void OnFail() {
+    public void onSendSuccess() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mBeanList.add(mSocketBean);
+                mAdapter.notifyDataSetChanged();
+                mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount()-1);
+                mEditText.setText("");
+            }
+        });
+    }
+
+    @Override
+    public void onSendFail() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -176,5 +218,45 @@ public class TalkActivity extends AppCompatActivity implements
         intent.putExtra(SEND_PEER_BEAN,address);
         context.startActivity(intent);
     }
+
+
+    @TargetApi(19)
+    public String handleImageOnKitKat(Intent data) {
+        Uri uri = data.getData();
+        if (DocumentsContract.isDocumentUri(this, uri)) {
+            String docId = DocumentsContract.getDocumentId(uri);
+            if ("com.android.providers.media.documents".equals(uri.getAuthority())) {
+                String id = docId.split(":")[1];
+                String selection = MediaStore.Images.Media._ID + "=" + id;
+                mPhotoPath = getmImageFilePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
+
+            } else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(docId));
+                mPhotoPath = getmImageFilePath(contentUri, null);
+            }
+
+        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
+            mPhotoPath = getmImageFilePath(uri, null);
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            mPhotoPath = uri.getPath();
+        }
+
+        return mPhotoPath;
+
+
+    }
+
+    public String getmImageFilePath(Uri uri, String selection) {
+        String path = null;
+        Cursor cursor = getContentResolver().query(uri, null, selection, null, null);
+        if (cursor != null) {
+            if (cursor.moveToNext()) {
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            }
+            cursor.close();
+        }
+        return path;
+    }
+
 
 }

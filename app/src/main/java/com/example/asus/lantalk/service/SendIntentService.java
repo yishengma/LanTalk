@@ -30,7 +30,8 @@ public class SendIntentService extends IntentService {
     }
 
     public interface OnSendListener {
-        void OnFail();
+        void onSendSuccess();
+        void onSendFail();
     }
 
     public SendIntentService() {
@@ -66,10 +67,13 @@ public class SendIntentService extends IntentService {
                     ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
                     os.writeObject(socketBean);
                     os.flush();
+                    if (mSendListener!=null){
+                        mSendListener.onSendSuccess();
+                    }
 
                 } catch (IOException e) {
                     if (mSendListener!=null){
-                        mSendListener.OnFail();
+                        mSendListener.onSendFail();
                     }
                 } finally {
                     if (socket != null) {
