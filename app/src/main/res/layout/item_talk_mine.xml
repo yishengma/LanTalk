@@ -54,7 +54,7 @@
             android:layout_alignParentTop="true"
             android:layout_toStartOf="@+id/ll_talk"
             android:background="@drawable/iv_talk_mine"
-            android:minHeight="50dp"
+            android:minHeight="40dp"
             android:paddingLeft="5dp"
             android:layout_marginLeft="10dp"
             android:text="sdfs"

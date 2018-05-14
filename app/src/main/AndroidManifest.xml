@@ -31,7 +31,9 @@
         <service android:name=".service.ReceiveService" />
 
         <activity android:name=".ui.TalkActivity"
-           />
+            >
+
+        </activity>
         <activity android:name=".ui.LoginActivity"
             android:theme="@style/LoginTheme"
             android:windowSoftInputMode="adjustPan">

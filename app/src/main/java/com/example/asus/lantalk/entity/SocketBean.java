@@ -16,7 +16,24 @@ public class SocketBean implements Serializable{
     private int mStatus;
     private int mType;
 
+    private String mFilePath;
+    private  boolean mIsFile ;
 
+    public String getFilePath() {
+        return mFilePath == null ? "" : mFilePath;
+    }
+
+    public void setFilePath(String filePath) {
+        mFilePath = filePath;
+    }
+
+    public boolean isFile() {
+        return mIsFile;
+    }
+
+    public void setFile(boolean file) {
+        mIsFile = file;
+    }
 
     public int getType() {
         return mType;

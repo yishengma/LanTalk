@@ -9,6 +9,7 @@ import com.example.asus.lantalk.constant.Constant;
 import com.example.asus.lantalk.entity.SocketBean;
 import com.example.asus.lantalk.service.ReceiveService;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
@@ -24,17 +25,22 @@ public class App extends Application {
     public static String sName;
     public static String sIP;
     private static  Context sContext;
+    private static File sCacheDir;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
+        sCacheDir = getExternalCacheDir();
 
          Intent intent = new Intent(getApplicationContext(),ReceiveService.class);
          startService(intent);
          sContext = getApplicationContext();
     }
 
+    public static File getsCacheDir() {
+        return sCacheDir;
+    }
 
     public static Context getsContext() {
         return sContext;
