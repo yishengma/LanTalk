@@ -15,19 +15,17 @@
 
         android:layout_gravity="center_horizontal"/>
 
-    <LinearLayout
-        android:layout_marginRight="10dp"
-
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
-        android:orientation="horizontal">
+        >
 
         <LinearLayout
+            android:id="@+id/ll_talk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_gravity="center_vertical"
             android:orientation="vertical" >
 
             <ImageView
@@ -44,24 +42,20 @@
                 android:layout_gravity="center"
                 android:text="用户"
                 android:textColor="@color/color_white_text"
-
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_msg_content"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="40dp"
-            android:background="@drawable/iv_talk_peers"
-            android:padding="10dp"
-            android:textSize="16sp"
-            android:textColor="@color/color_white_text"
+        <ImageView
+            android:layout_toRightOf="@+id/ll_talk"
+            android:id="@+id/iv_photo"
+            android:layout_width="80dp"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop"
             android:gravity="center_vertical"
-            android:text=""
             android:focusable="true"
             android:clickable="true"
+            android:layout_marginLeft="10dp"
             />
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

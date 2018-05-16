@@ -9,30 +9,44 @@ import android.util.Log;
 import com.example.asus.lantalk.app.App;
 import com.example.asus.lantalk.constant.Constant;
 import com.example.asus.lantalk.entity.SocketBean;
+import com.example.asus.lantalk.utils.TimeUtil;
 
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.io.StreamCorruptedException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static com.example.asus.lantalk.constant.Constant.SERVER_PORT;
+import static com.example.asus.lantalk.constant.Constant.PEERFILE;
+
+
+import static com.example.asus.lantalk.constant.Constant.SERVER_FILE_PORT;
+import static com.example.asus.lantalk.constant.Constant.SERVER_MSG_PORT;
+
 
 /**
  * Created by asus on 18-5-12.
  */
 
 public class ReceiveService extends Service {
-    private ServerSocket mServerSocket;
-    private ObjectInputStream mInputStream;
-    private Socket mSocket;
+    private ServerSocket mMsgServerSocket;
+    private Socket mMsgSocket;
+
+    private ServerSocket mFileServerSocket;
+    private Socket mFileSocket;
+    private ObjectInputStream mObjectInputStream;
+
 
 
     private DataInputStream mDataInputStream = null;
-
+    private InputStream mInputStream;
+    private OutputStream mOutputStream;
     private FileOutputStream mFileOutputStream = null;
     private static final String TAG = "ReceiveService";
 
@@ -72,27 +86,25 @@ public class ReceiveService extends Service {
 
     @Override
     public void onCreate() {
-        initServer();
+
+        initMsgServer();
+        initFileServer();
         super.onCreate();
 
     }
 
-    public void initServer() {
+    public void initMsgServer() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    mServerSocket = new ServerSocket(SERVER_PORT);
+                    mMsgServerSocket = new ServerSocket(SERVER_MSG_PORT);
                     while (true) {
-                        mSocket = mServerSocket.accept();
-                        try {
+                        mMsgSocket = mMsgServerSocket.accept();
+                        mObjectInputStream = new ObjectInputStream(mMsgSocket.getInputStream());
+                        Object object = mObjectInputStream.readObject();
+                        receiveMsg(object);
 
-                            mInputStream = new ObjectInputStream(mSocket.getInputStream());
-                            Object object = mInputStream.readObject();
-                            receiveMsg(object);
-                        }catch (StreamCorruptedException exception){
-                            receiveFile(mSocket);
-                        }
 
                     }
                 } catch (Exception e) {
@@ -106,9 +118,9 @@ public class ReceiveService extends Service {
 
                 } finally {
                     try {
-                        if (mSocket.isConnected()) {
-                            if (mSocket != null) {
-                                mSocket.close();
+                        if (mMsgSocket.isConnected()) {
+                            if (mMsgSocket != null) {
+                                mMsgSocket.close();
                             }
                         }
 
@@ -118,6 +130,45 @@ public class ReceiveService extends Service {
                         if (mFileOutputStream != null) {
                             mFileOutputStream.close();
                         }
+                        if (mObjectInputStream != null) {
+                            mObjectInputStream.close();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public void initFileServer() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mFileServerSocket = new ServerSocket(SERVER_FILE_PORT);
+                    while (true) {
+                        mFileSocket = mFileServerSocket.accept();
+                        receiveFile(mFileSocket);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (mReceiveListener != null) {
+                        mReceiveListener.onReceiceFailed();
+                    }
+
+                } finally {
+                    try {
+                        if (mFileSocket.isConnected()) {
+                            if (mFileSocket != null) {
+                                mFileSocket.close();
+                            }
+                        }
+
+                        if (mOutputStream != null) {
+                            mOutputStream.close();
+                        }
+
                         if (mInputStream != null) {
                             mInputStream.close();
                         }
@@ -129,7 +180,7 @@ public class ReceiveService extends Service {
         }).start();
     }
 
-    public void receiveMsg(Object object ) throws Exception{
+    public void receiveMsg(Object object) throws Exception {
 
         SocketBean socketBeen = (SocketBean) object;
         if (mConnectListener != null && socketBeen.getStatus() == Constant.CONNECT) {
@@ -139,18 +190,19 @@ public class ReceiveService extends Service {
         } else if (mConnectListener != null && socketBeen.getStatus() == Constant.REQUEST) {
             mConnectListener.onRequestCallBack(socketBeen);
         } else if (mReceiveListener != null && socketBeen.getStatus() == Constant.RECEIVE) {
+            socketBeen.setType(Constant.PEERMSG);
             mReceiveListener.onReceiveCallBack(socketBeen);
         }
     }
+
     public void receiveFile(Socket socket) throws IOException {
-
-
-        mDataInputStream = new DataInputStream(socket.getInputStream());
-
-        // 文件名和长度
-
-        File file = new File(App.getsCacheDir(), "image.jpg");
+        File file = new File(App.getsCacheDir(), TimeUtil.getCurrentTime() + "image.jpg");
+        File dirs = new File(file.getParent());
+        if (!dirs.exists())
+            dirs.mkdirs();
+        file.createNewFile();
         mFileOutputStream = new FileOutputStream(file);
+        mDataInputStream = new DataInputStream(socket.getInputStream());
 
         byte[] bytes = new byte[1024];
         int length = 0;
@@ -160,7 +212,13 @@ public class ReceiveService extends Service {
 
 
         }
-        Log.e(TAG, "receiveFile: "+file.getAbsolutePath() );
+        SocketBean socketBean = new SocketBean();
+        socketBean.setFilePath(file.getAbsolutePath());
+        socketBean.setFile(true);
+        socketBean.setType(PEERFILE);
+        if (mReceiveListener!=null){
+            mReceiveListener.onReceiveCallBack(socketBean);
+        }
 
     }
 }

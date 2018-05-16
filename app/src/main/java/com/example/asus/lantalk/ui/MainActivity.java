@@ -17,7 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.asus.OnScanListener;
+import com.example.asus.lantalk.listener.OnScanListener;
 import com.example.asus.lantalk.R;
 import com.example.asus.lantalk.adapter.DeviceAdapter;
 import com.example.asus.lantalk.app.App;
@@ -96,21 +96,21 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-        ScanDeviceUtil.setOnScanListener(new OnScanListener() {
-            @Override
-            public void OnSuccessed(int i) {
-                LoadingDialogUtil.closeDialog();
-                Toast.makeText(MainActivity.this, "共搜索到" + i + "个对等方!", Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void OnFailed() {
-                LoadingDialogUtil.closeDialog();
-
-                Toast.makeText(MainActivity.this, "搜索失败!", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        ScanDeviceUtil.setOnScanListener(new OnScanListener() {
+//            @Override
+//            public void OnSuccessed(int i) {
+//                LoadingDialogUtil.closeDialog();
+//                Toast.makeText(MainActivity.this, "共搜索到" + i + "个对等方!", Toast.LENGTH_SHORT).show();
+//
+//            }
+//
+//            @Override
+//            public void OnFailed() {
+//                LoadingDialogUtil.closeDialog();
+//
+//                Toast.makeText(MainActivity.this, "搜索失败!", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
 
     }
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity
            @Override
            public void run() {
                LoadingDialogUtil.closeDialog();
-               TalkActivity.actionStart(MainActivity.this,bean.getSendIP());
+               TalkActivity.actionStart(MainActivity.this,bean.getSendIP(),bean.getSendName());
 
            }
        });
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity
                                 startService(intent);
                                 dialog.dismiss();
                                 LoadingDialogUtil.closeDialog();
-                                TalkActivity.actionStart(MainActivity.this,bean.getSendIP());
+                                TalkActivity.actionStart(MainActivity.this,bean.getSendIP(),bean.getSendName());
 
                             }
                         }).create();

@@ -15,4 +15,5 @@
 
     <color name="color_deepBlue_bar">#2d3e56</color>
     <color name="color_white_text">#fdfdfe</color>
+    <color name="color_background">#000000</color>
 </resources>

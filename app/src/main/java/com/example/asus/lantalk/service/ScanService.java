@@ -29,7 +29,7 @@ public class ScanService extends Service {
     public void onCreate() {
         super.onCreate();
         mStringList = new ArrayList<>();
-        mStringList = ScanDeviceUtil.scan();
+        mStringList = ScanDeviceUtil.scanPeer();
     }
 
 

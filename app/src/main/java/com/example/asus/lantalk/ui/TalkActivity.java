@@ -1,16 +1,17 @@
 package com.example.asus.lantalk.ui;
 
 import android.annotation.TargetApi;
-import android.app.IntentService;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,8 +24,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,16 +38,18 @@ import com.example.asus.lantalk.constant.Constant;
 import com.example.asus.lantalk.entity.SocketBean;
 import com.example.asus.lantalk.service.ReceiveService;
 import com.example.asus.lantalk.service.SendIntentService;
-import com.example.asus.lantalk.utils.CompressImageUtil;
 import com.example.asus.lantalk.utils.TimeUtil;
-import com.zxy.tiny.callback.FileCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.asus.lantalk.constant.Constant.ACTION_SEND_FILE;
 import static com.example.asus.lantalk.constant.Constant.ACTION_SEND_MSG;
+import static com.example.asus.lantalk.constant.Constant.MINEFILE;
+import static com.example.asus.lantalk.constant.Constant.MINEMSG;
+import static com.example.asus.lantalk.constant.Constant.RECEIVE;
 import static com.example.asus.lantalk.constant.Constant.SEND_PEER_BEAN;
+import static com.example.asus.lantalk.constant.Constant.SEND_PEER_NAME;
 import static com.example.asus.lantalk.constant.Constant.sCHOOSEALBUM;
 
 public class TalkActivity extends AppCompatActivity implements
@@ -52,6 +57,7 @@ public class TalkActivity extends AppCompatActivity implements
     private EditText mEditText;
     private Toolbar mToolbar;
     private TextView mName;
+
     private RecyclerView mRvMsgContent;
     private Button mSendButton;
     private MessageAdapter mAdapter;
@@ -60,6 +66,7 @@ public class TalkActivity extends AppCompatActivity implements
     private SocketBean mSocketBean;
     private String mPhotoPath;//背景照的路径
     private static final String TAG = "TalkActivity";
+    private String mPeerIP;
 
 
     @Override
@@ -85,16 +92,26 @@ public class TalkActivity extends AppCompatActivity implements
 
     private void initView() {
         mName = findViewById(R.id.tv_name);
-        mName.setText(getIntent().getStringExtra(SEND_PEER_BEAN));
+        mName.setText(getIntent().getStringExtra(SEND_PEER_NAME));
+        mPeerIP = getIntent().getStringExtra(SEND_PEER_BEAN);
         mRvMsgContent = findViewById(R.id.rv_msg_content);
         mEditText = findViewById(R.id.et_input);
         mSendButton = findViewById(R.id.btn_send);
         mBeanList = new ArrayList<>();
-        mAdapter = new MessageAdapter(mBeanList);
+        mAdapter = new MessageAdapter(mBeanList, this);
         mRvMsgContent.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRvMsgContent.setAdapter(mAdapter);
+        mAdapter.setOnClickListener(new MessageAdapter.OnClickListener() {
+            @Override
+            public void OnClick(String path) {
+                ImageDialogFragment dialogFragment = new ImageDialogFragment();
+                dialogFragment.setPath(path);
+                dialogFragment.show(getSupportFragmentManager(), "image");
+            }
+        });
         SendIntentService.setSendListener(this);
         ReceiveService.setReceiveListener(this);
+
     }
 
 
@@ -105,14 +122,14 @@ public class TalkActivity extends AppCompatActivity implements
                 if (!TextUtils.isEmpty(mEditText.getText().toString())) {
                     Intent intent = new Intent(TalkActivity.this, SendIntentService.class);
                     mSocketBean = new SocketBean();
-                    mSocketBean.setReceiveIP(mName.getText().toString());
+                    mSocketBean.setReceiveIP(mPeerIP);
                     mSocketBean.setMessage(mEditText.getText().toString());
                     mSocketBean.setSendIP(App.sIP);
                     mSocketBean.setSendName(App.sName);
                     mSocketBean.setTime(TimeUtil.getCurrentTime());
                     intent.setAction(Constant.ACTION_SEND_MSG);
                     mSocketBean.setStatus(Constant.RECEIVE);
-                    mSocketBean.setType(Constant.MINE);
+                    mSocketBean.setType(Constant.MINEMSG);
                     intent.putExtra(SEND_PEER_BEAN, mSocketBean);
                     startService(intent);
 
@@ -160,22 +177,18 @@ public class TalkActivity extends AppCompatActivity implements
                         Uri uri = data.getData();
                         mPhotoPath = getmImageFilePath(uri, null);
                     }
+                    Intent intent = new Intent(TalkActivity.this, SendIntentService.class);
+                    mSocketBean = new SocketBean();
+                    mSocketBean.setReceiveIP(mPeerIP);
+                    mSocketBean.setFile(true);
+                    mSocketBean.setFilePath(mPhotoPath);
+                    mSocketBean.setSendName(App.sName);
+                    mSocketBean.setStatus(RECEIVE);
+                    mSocketBean.setType(MINEFILE);
+                    intent.setAction(Constant.ACTION_SEND_FILE);
+                    intent.putExtra(SEND_PEER_BEAN, mSocketBean);
+                    startService(intent);
 
-                    CompressImageUtil.compressImage(mPhotoPath, new FileCallback() {
-                        @Override
-                        public void callback(boolean isSuccess, String outfile, Throwable t) {
-                            if (isSuccess){
-                                Intent intent = new Intent(TalkActivity.this, SendIntentService.class);
-                                mSocketBean = new SocketBean();
-                                mSocketBean.setReceiveIP(mName.getText().toString());
-                                mSocketBean.setFile(isSuccess);
-                                mSocketBean.setFilePath(outfile);
-                                intent.setAction(Constant.ACTION_SEND_FILE);
-                                intent.putExtra(SEND_PEER_BEAN, mSocketBean);
-                                startService(intent);
-                            }
-                        }
-                    });
                 }
         }
     }
@@ -185,7 +198,7 @@ public class TalkActivity extends AppCompatActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                bean.setType(Constant.PEER);
+                bean.setSendName(mName.getText().toString());
                 mBeanList.add(bean);
                 mAdapter.notifyDataSetChanged();
                 mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
@@ -201,23 +214,27 @@ public class TalkActivity extends AppCompatActivity implements
 
     @Override
     public void onSendSuccess(String type) {
-        if (type.equals(ACTION_SEND_MSG)){
+        if (type.equals(ACTION_SEND_MSG)) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    mSocketBean.setType(MINEMSG);
                     mBeanList.add(mSocketBean);
                     mAdapter.notifyDataSetChanged();
                     mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
                     mEditText.setText("");
                 }
             });
-        }else if (type.equals(ACTION_SEND_FILE)){
-           runOnUiThread(new Runnable() {
-               @Override
-               public void run() {
-                   Log.e(TAG, "run: " );
-               }
-           });
+        } else if (type.equals(ACTION_SEND_FILE)) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mSocketBean.setType(MINEFILE);
+                    mBeanList.add(mSocketBean);
+                    mAdapter.notifyDataSetChanged();
+                    mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
+                }
+            });
         }
     }
 
@@ -238,9 +255,10 @@ public class TalkActivity extends AppCompatActivity implements
     }
 
 
-    public static void actionStart(Context context, String address) {
+    public static void actionStart(Context context, String address, String name) {
         Intent intent = new Intent(context, TalkActivity.class);
         intent.putExtra(SEND_PEER_BEAN, address);
+        intent.putExtra(SEND_PEER_NAME, name);
         context.startActivity(intent);
     }
 

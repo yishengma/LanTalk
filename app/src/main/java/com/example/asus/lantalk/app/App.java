@@ -15,7 +15,7 @@ import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static com.example.asus.lantalk.constant.Constant.SERVER_PORT;
+
 
 /**
  * Created by asus on 18-5-9.

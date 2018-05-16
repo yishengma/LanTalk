@@ -26,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
+
         setContentView(R.layout.activity_login);
         mNameEditText = findViewById(R.id.et_name);
         mLoginButton = findViewById(R.id.btn_login);
@@ -37,8 +38,9 @@ public class LoginActivity extends AppCompatActivity {
                 }else {
                     App.sName = mNameEditText.getText().toString();
                     App.sIP = ScanDeviceUtil.getLocalIPAddress();
-                    Log.e("TAG", "onClick: "+App.sIP );
+
                     MainActivity.actionStart(LoginActivity.this);
+                    finish();
                 }
             }
         });
