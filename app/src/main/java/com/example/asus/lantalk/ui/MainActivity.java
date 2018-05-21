@@ -38,13 +38,15 @@ import static com.example.asus.lantalk.constant.Constant.SEND_PEER_BEAN;
 
 public class MainActivity extends AppCompatActivity
         implements SendIntentService.OnSendListener,
-        ReceiveService.OnConnectListener{
+        ReceiveService.OnConnectListener {
     private Toolbar mToolbar;
     private List<SocketBean> mSocketBeanList;
     private DeviceAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private static final String TAG = "MainActivity";
     private ScanService.PeerBinder mBinder;
+    private LoadingDialogUtil mLoadingDialogUtil;
+
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(mToolbar);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mAdapter);
-         ReceiveService.setConnectListener(this);
+        ReceiveService.setConnectListener(this);
 
         mAdapter.setOnClickListener(new DeviceAdapter.OnClickListener() {
             @Override
@@ -94,7 +96,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-
+        mLoadingDialogUtil = new LoadingDialogUtil();
 
 //        ScanDeviceUtil.setOnScanListener(new OnScanListener() {
 //            @Override
@@ -120,7 +122,7 @@ public class MainActivity extends AppCompatActivity
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(MainActivity.this,"对方拒绝了你的请求！",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "对方拒绝了你的请求！", Toast.LENGTH_SHORT).show();
                 LoadingDialogUtil.closeDialog();
             }
         });
@@ -128,14 +130,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onAccessCallBack(final SocketBean bean) {
-       runOnUiThread(new Runnable() {
-           @Override
-           public void run() {
-               LoadingDialogUtil.closeDialog();
-               TalkActivity.actionStart(MainActivity.this,bean.getSendIP(),bean.getSendName());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LoadingDialogUtil.closeDialog();
+                TalkActivity.actionStart(MainActivity.this, bean.getSendIP(), bean.getSendName());
 
-           }
-       });
+            }
+        });
     }
 
     @Override
@@ -145,8 +147,8 @@ public class MainActivity extends AppCompatActivity
             public void run() {
                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
                         .setIcon(R.drawable.iv_logo)
-                        .setTitle("来自 IP:"+bean.getSendIP())
-                        .setMessage(bean.getSendName()+"请求与您通信！")
+                        .setTitle("来自 IP:" + bean.getSendIP())
+                        .setMessage(bean.getSendName() + "请求与您通信！")
                         .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -179,7 +181,7 @@ public class MainActivity extends AppCompatActivity
                                 startService(intent);
                                 dialog.dismiss();
                                 LoadingDialogUtil.closeDialog();
-                                TalkActivity.actionStart(MainActivity.this,bean.getSendIP(),bean.getSendName());
+                                TalkActivity.actionStart(MainActivity.this, bean.getSendIP(), bean.getSendName());
 
                             }
                         }).create();
@@ -222,7 +224,6 @@ public class MainActivity extends AppCompatActivity
                 startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                 break;
             case R.id.menu_search:
-//                LoadingDialogUtil.createLoadingDialog(this,"正在搜索对等方");
                 if (NetWorkUtil.isNetworkConnected(this) && NetWorkUtil.isWifiConnected(this)) {
                     LoadingDialogUtil.createLoadingDialog(MainActivity.this, "正在搜索对等方！");
                     Intent intent = new Intent(MainActivity.this, ScanService.class);

@@ -2,6 +2,7 @@ package com.example.asus.lantalk.utils;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +48,7 @@ public class LoadingDialogUtil {
             window.setAttributes(lp);
             window.setWindowAnimations(R.style.PopWindowAnimStyle);
             sDialog.show();
+            Log.e("tag", "createLoadingDialog: " );
             return sDialog;
         }
 

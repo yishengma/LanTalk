@@ -311,7 +311,6 @@ public class ScanDeviceUtil {
                         mSocket.connect((new InetSocketAddress(ip, SERVER_MSG_PORT)), 1000);
 
                     } catch (Exception e) {
-                        Log.e(TAG, "run: "+e);
                          continue;
                     }
 
