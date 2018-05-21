@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView mRecyclerView;
     private static final String TAG = "MainActivity";
     private ScanService.PeerBinder mBinder;
-    private LoadingDialogUtil mLoadingDialogUtil;
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -96,8 +95,17 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-        mLoadingDialogUtil = new LoadingDialogUtil();
+        ScanDeviceUtil.setOnScanListener(new OnScanListener() {
+            @Override
+            public void OnSuccessed(int i) {
+                LoadingDialogUtil.closeDialog();
+            }
 
+            @Override
+            public void OnFailed() {
+
+            }
+        });
 //        ScanDeviceUtil.setOnScanListener(new OnScanListener() {
 //            @Override
 //            public void OnSuccessed(int i) {
@@ -225,9 +233,11 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.menu_search:
                 if (NetWorkUtil.isNetworkConnected(this) && NetWorkUtil.isWifiConnected(this)) {
-                    LoadingDialogUtil.createLoadingDialog(MainActivity.this, "正在搜索对等方！");
-                    Intent intent = new Intent(MainActivity.this, ScanService.class);
-                    bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
+                    if ( LoadingDialogUtil.createLoadingDialog(MainActivity.this, "正在搜索对等方！")){
+                        Intent intent = new Intent(MainActivity.this, ScanService.class);
+                        bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
+                    }
+
                 } else {
                     Toast.makeText(this, "请打开WiFi连接！", Toast.LENGTH_SHORT).show();
                 }

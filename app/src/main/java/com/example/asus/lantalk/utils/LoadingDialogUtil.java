@@ -26,7 +26,7 @@ public class LoadingDialogUtil {
          * @param msg
          * @return
          */
-        public static Dialog createLoadingDialog(Context context, String msg) {
+        public static boolean createLoadingDialog(Context context, String msg) {
             LayoutInflater inflater = LayoutInflater.from(context);
             View view = inflater.inflate(R.layout.dialog_loading, null);// 得到加载view
             LinearLayout layout =view.findViewById(R.id.dialog_loading_view);// 加载布局
@@ -48,8 +48,7 @@ public class LoadingDialogUtil {
             window.setAttributes(lp);
             window.setWindowAnimations(R.style.PopWindowAnimStyle);
             sDialog.show();
-            Log.e("tag", "createLoadingDialog: " );
-            return sDialog;
+            return sDialog.isShowing();
         }
 
 

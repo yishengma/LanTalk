@@ -33,7 +33,7 @@ public class ScanDeviceUtil {
     /**
      * 核心池大小
      **/
-    private static final int CORE_POOL_SIZE = 1;
+    private static final int CORE_POOL_SIZE = 5;
     /**
      * 线程池最大线程数
      **/
@@ -41,7 +41,7 @@ public class ScanDeviceUtil {
 
     private static String mDevAddress;// 本机IP地址-完整
     private static String mLocAddress;// 局域网IP地址头,如：192.168.1.
-    private static Runtime mRun = Runtime.getRuntime();// 获取当前运行环境，来执行ping，相当于windows的cmd
+    private static Runtime mRun ;// 获取当前运行环境，来执行ping，相当于windows的cmd
     private static Process mProcess = null;// 进程
     private static String mPing = "ping -c 1 -w 3 ";// 其中 -c 1为发送的次数，-w 表示发送后等待响应的时间
     private static List<String> mIpList = new ArrayList<>();// ping成功的IP地址
@@ -60,6 +60,7 @@ public class ScanDeviceUtil {
      * @return void
      */
     public static List<String> scan() {
+        mRun = Runtime.getRuntime();
         mDevAddress = getLocAddress();// 获取本机IP地址
         mLocAddress = getLocAddrIndex(mDevAddress);// 获取本地ip前缀
         Log.d(TAG, "开始扫描设备,本机Ip为：" + mDevAddress);
@@ -147,6 +148,7 @@ public class ScanDeviceUtil {
                 e.printStackTrace();
             }
         }
+        mRun.gc();
         return mIpList;
     }
 
