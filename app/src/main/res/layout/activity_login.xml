@@ -4,17 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@drawable/iv_launch"
     tools:context="com.example.asus.lantalk.ui.LoginActivity">
 
-     <ImageView
-    android:src="@drawable/iv_logo"
-    android:layout_centerHorizontal="true"
-    android:layout_marginTop="@dimen/dimen_margin_top_image"
-    android:layout_width="@dimen/dimen_size_image"
-    android:layout_height="@dimen/dimen_size_image" />
     <TextView
-        android:id="@+id/tv_name"
+        android:id="@+id/tv_app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -22,55 +16,57 @@
         android:text="@string/p2p_lantalk"
         android:textColor="@color/color_white_text"
         android:textSize="@dimen/dimen_size_name"
-        android:textStyle="bold" />
+         />
 
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/iv_head_portrait"
+        android:layout_width="@dimen/dimen_size_image"
+        android:layout_height="@dimen/dimen_size_image"
+        android:layout_above="@+id/et_input"
+        android:layout_marginBottom="@dimen/dimen_margin_seventy"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/iv_head_1" />
 
     <EditText
-        android:id="@+id/et_name"
+        android:id="@+id/et_input"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_name"
-        android:layout_marginLeft="@dimen/dimen_margin_login"
-        android:layout_marginRight="@dimen/dimen_margin_login"
-        android:layout_marginTop="@dimen/dimen_margin_top_et"
-        android:drawableLeft="@drawable/iv_user_name"
-        android:hint="@string/hint"
-        android:imeOptions="actionNext"
-        android:maxLength="11"
+        android:layout_height="@dimen/dimen_size_et"
+        android:layout_above="@+id/btn_login"
+        android:layout_marginBottom="@dimen/dimen_margin_twenty"
+        android:layout_marginLeft="@dimen/dimen_margin_thirty"
+        android:layout_marginRight="@dimen/dimen_margin_thirty"
+        android:background="@drawable/et_input_background"
+        android:gravity="center"
         android:maxLines="1"
-        android:theme="@style/EditTextStyle"
-        android:textColor="@color/color_white_text" />
-    <View
-        android:layout_below="@+id/et_name"
-        android:layout_width="match_parent"
-        android:background="@color/color_white_hint"
-        android:layout_marginLeft="@dimen/dimen_margin_login"
-        android:layout_marginRight="@dimen/dimen_margin_login"
-        android:layout_height="1dp"/>
-
-
+        android:hint="@string/name_input_hint"
+        android:textColorHint="@color/color_white_hint"
+        android:maxLength="12"
+        android:textColor="@color/color_white_text"
+        android:textSize="@dimen/dimen_size_input" />
     <Button
         android:id="@+id/btn_login"
-        android:layout_marginTop="@dimen/dimen_margin_top_login"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/et_name"
-        android:layout_marginLeft="@dimen/dimen_margin_login"
-        android:layout_marginRight="@dimen/dimen_margin_login"
-        android:background="@color/color_btn_login"
         android:text="@string/login"
+        android:gravity="center"
+        android:background="@drawable/btn_login_background"
         android:textColor="@color/color_white_text"
-        android:textSize="@dimen/dimen_size_login" />
-
+        android:textSize="@dimen/dimen_size_input"
+        android:layout_marginLeft="@dimen/dimen_margin_thirty"
+        android:layout_marginRight="@dimen/dimen_margin_thirty"
+        android:layout_marginBottom="@dimen/dimen_margin_sixty"
+        android:layout_above="@+id/tv_app_introduction"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_size_et"
+        />
     <TextView
-        android:textColor="@color/color_white_text"
-        android:layout_below="@+id/btn_login"
-        android:gravity="bottom"
-        android:paddingBottom="@dimen/dimen_padding_bottom_introduction"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:textSize="@dimen/dimen_size_introduction"
-        android:text="@string/introduction"
+        android:id="@+id/tv_app_introduction"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimen_margin_forty"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/introduction"
+        android:textColor="@color/color_white_text"
+        android:textStyle="normal" />
 </RelativeLayout>

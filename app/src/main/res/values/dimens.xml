@@ -4,11 +4,23 @@
     <dimen name="dimen_size_name">40sp</dimen>
     <dimen name="dimen_size_introduction">13sp</dimen>
     <dimen name="dimen_size_login">18sp</dimen>
+    <dimen name="dimen_size_input">18sp</dimen>
 
+    <dimen name="dimen_margin_ten">10dp</dimen>
+    <dimen name="dimen_margin_twenty">20dp</dimen>
+    <dimen name="dimen_margin_thirty">30dp</dimen>
+    <dimen name="dimen_margin_forty">40dp</dimen>
+    <dimen name="dimen_margin_fifty">50dp</dimen>
+    <dimen name="dimen_margin_sixty">60dp</dimen>
+    <dimen name="dimen_margin_seventy">70dp</dimen>
+
+
+    <dimen name="dimen_size_et">50dp</dimen>
+    <dimen name="dimen_size_image">70dp</dimen>
     <dimen name="dimen_margin_top_image">90dp</dimen>
-    <dimen name="dimen_size_image">60dp</dimen>
-
-    <dimen name="dimen_margin_top_name">150dp</dimen>
+    <dimen name="dimen_size_corners">40dp</dimen>
+    <dimen name="dimen_size_stroke">1dp</dimen>
+    <dimen name="dimen_margin_top_name">120dp</dimen>
     <dimen name="dimen_margin_top_login">30dp</dimen>
     <dimen name="dimen_padding_bottom_introduction">30dp</dimen>
     <dimen name="dimen_margin_top_et">100dp</dimen>

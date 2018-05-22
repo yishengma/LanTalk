@@ -1,5 +1,7 @@
 package com.example.asus.lantalk.constant;
 
+import com.example.asus.lantalk.R;
+
 /**
  * Created by asus on 18-5-8.
  */
@@ -24,10 +26,6 @@ public class Constant {
     public static final int PEERFILE = 3;
 
 
-
-
-
-
     public static final int REQUEST = 0;
     public static final int CONNECT = 1;
     public static final int REFUSE = 2;
@@ -35,6 +33,12 @@ public class Constant {
 
 
     public static final int sCHOOSEALBUM = 0;
+
+
+    public static final int[] PROFILEPHOTO = {R.drawable.iv_head_1, R.drawable.iv_head_2, R.drawable.iv_head_3,
+            R.drawable.iv_head_4, R.drawable.iv_head_5, R.drawable.iv_head_6,
+            R.drawable.iv_head_7, R.drawable.iv_head_8, R.drawable.iv_head_9,
+            R.drawable.iv_head_10, R.drawable.iv_head_11, R.drawable.iv_head_12,};
 
 
 }

@@ -9,11 +9,16 @@
 
 
     <color name="color_white_login">#fdfdfe</color>
-    <color name="color_white_hint">#b4fdfdfe</color>
+    <color name="color_white_hint">#c1fdfdfd</color>
     <color name="color_text_login">#2d3e56</color>
     <color name="color_btn_login">#01989c</color>
 
     <color name="color_deepBlue_bar">#2d3e56</color>
     <color name="color_white_text">#fdfdfe</color>
+
     <color name="color_background">#000000</color>
+
+    <color name="color_white_background">#ffffff</color>
+
+    <color name="color_blue_login">#2c3a57</color>
 </resources>

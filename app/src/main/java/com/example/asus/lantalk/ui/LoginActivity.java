@@ -15,21 +15,42 @@ import com.example.asus.lantalk.R;
 import com.example.asus.lantalk.app.App;
 import com.example.asus.lantalk.utils.ScanDeviceUtil;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class LoginActivity extends AppCompatActivity {
     private EditText mNameEditText;
     private Button mLoginButton;
+    private CircleImageView mCircleImageView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+       initView();
+       initListener();
+
+
+
+    }
+
+    private void initView(){
         requestWindowFeature(1);
         if (Build.VERSION.SDK_INT >= 19) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
-
         setContentView(R.layout.activity_login);
-        mNameEditText = findViewById(R.id.et_name);
+        mNameEditText = findViewById(R.id.et_input);
         mLoginButton = findViewById(R.id.btn_login);
+        mCircleImageView = findViewById(R.id.iv_head_portrait);
+    }
+
+    private void initListener(){
+        mCircleImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -38,13 +59,10 @@ public class LoginActivity extends AppCompatActivity {
                 }else {
                     App.sName = mNameEditText.getText().toString();
                     App.sIP = ScanDeviceUtil.getLocalIPAddress();
-
                     MainActivity.actionStart(LoginActivity.this);
                     finish();
                 }
             }
         });
-
-
     }
 }

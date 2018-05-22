@@ -44,27 +44,7 @@ public class MainActivity extends AppCompatActivity
     private DeviceAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private static final String TAG = "MainActivity";
-    private ScanService.PeerBinder mBinder;
 
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            mBinder = (ScanService.PeerBinder) iBinder;
-            List<String> mBinderIPList = mBinder.getIPList();
-            int size = mBinderIPList.size();
-            for (int i = 0; i < size; i++) {
-                SocketBean socketBean = new SocketBean();
-                socketBean.setReceiveIP(mBinderIPList.get(i));
-                mSocketBeanList.add(socketBean);
-            }
-            mAdapter.notifyDataSetChanged();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,32 +75,31 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-        ScanDeviceUtil.setOnScanListener(new OnScanListener() {
-            @Override
-            public void OnSuccessed(int i) {
-                LoadingDialogUtil.closeDialog();
-            }
+       ScanDeviceUtil.setOnScanListener(new OnScanListener() {
+           @Override
+           public void OnSuccess(final List<String> list) {
+              runOnUiThread(new Runnable() {
+                  @Override
+                  public void run() {
+                      int size = list.size();
+                      for (int i = 0; i < size; i++) {
+                          SocketBean socketBean = new SocketBean();
+                          socketBean.setReceiveIP(list.get(i));
+                          mSocketBeanList.add(socketBean);
+                      }
+                      mAdapter.notifyDataSetChanged();
+                      LoadingDialogUtil.closeDialog();
+                  }
 
-            @Override
-            public void OnFailed() {
+              });
+           }
 
-            }
-        });
-//        ScanDeviceUtil.setOnScanListener(new OnScanListener() {
-//            @Override
-//            public void OnSuccessed(int i) {
-//                LoadingDialogUtil.closeDialog();
-//                Toast.makeText(MainActivity.this, "共搜索到" + i + "个对等方!", Toast.LENGTH_SHORT).show();
-//
-//            }
-//
-//            @Override
-//            public void OnFailed() {
-//                LoadingDialogUtil.closeDialog();
-//
-//                Toast.makeText(MainActivity.this, "搜索失败!", Toast.LENGTH_SHORT).show();
-//            }
-//        });
+           @Override
+           public void OnFailed() {
+
+           }
+       });
+
 
 
     }
@@ -235,7 +214,7 @@ public class MainActivity extends AppCompatActivity
                 if (NetWorkUtil.isNetworkConnected(this) && NetWorkUtil.isWifiConnected(this)) {
                     if ( LoadingDialogUtil.createLoadingDialog(MainActivity.this, "正在搜索对等方！")){
                         Intent intent = new Intent(MainActivity.this, ScanService.class);
-                        bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
+                        startService(intent);
                     }
 
                 } else {
@@ -249,7 +228,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(mServiceConnection);
+
     }
 
     public static void actionStart(Context context) {

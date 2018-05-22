@@ -18,8 +18,6 @@ import java.util.List;
  */
 
 public class ScanService extends IntentService {
-    private List<String> mStringList;
-    private PeerBinder mBinder = new PeerBinder();
     private static final String TAG = "ScanService";
 
     public ScanService() {
@@ -29,22 +27,19 @@ public class ScanService extends IntentService {
         super(name);
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
+
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        mStringList = new ArrayList<>();
-        mStringList = ScanDeviceUtil.scan();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ScanDeviceUtil.scan();
+            }
+        }).start();
     }
 
-    public   class PeerBinder extends Binder{
 
-        public List<String> getIPList(){
-            return mStringList;
-        }
-    }
+
+
 }

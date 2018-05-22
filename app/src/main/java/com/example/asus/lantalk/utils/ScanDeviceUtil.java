@@ -131,7 +131,7 @@ public class ScanDeviceUtil {
                 if (mExecutor.isTerminated()) {// 扫描结束,开始验证
                     Log.d(TAG, "扫描结束,总共成功扫描到" + mIpList.size() + "个设备.");
                     if (onScanListener != null) {
-                        onScanListener.OnSuccessed(mIpList.size());
+                        onScanListener.OnSuccess(mIpList);
                     }
                     break;
                 }
@@ -327,7 +327,7 @@ public class ScanDeviceUtil {
 
 
                 }
-                onScanListener.OnSuccessed(mIpList.size());
+                onScanListener.OnSuccess(mIpList);
 
             }
         }).start();
