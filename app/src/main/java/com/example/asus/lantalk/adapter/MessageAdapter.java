@@ -11,11 +11,15 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.asus.lantalk.R;
+import com.example.asus.lantalk.app.App;
 import com.example.asus.lantalk.constant.Constant;
 import com.example.asus.lantalk.entity.SocketBean;
 import com.example.asus.lantalk.ui.ImageDialogFragment;
+import com.example.asus.lantalk.utils.ProfilePicturePickUtil;
 
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by asus on 18-5-11.
@@ -23,7 +27,6 @@ import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<SocketBean> mBeans;
-    private Context mContext;
     private OnClickListener mOnClickListener;
 
     public void setOnClickListener(OnClickListener onClickListener) {
@@ -34,9 +37,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void OnClick(String path);
     }
 
-    public MessageAdapter(List<SocketBean> beans,Context context) {
+    public MessageAdapter(List<SocketBean> beans) {
         mBeans = beans;
-        mContext = context;
+
     }
 
     @Override
@@ -62,14 +65,15 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (holder instanceof MessageMine) {
             ((MessageMine)holder).mNameTextView.setText(bean.getSendName());
             ((MessageMine)holder).mMsgTextView.setText(bean.getMessage());
-            ((MessageMine)holder).mTimeTextView.setText(bean.getTime());
+            Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((MessageMine)holder).mCircleImageView);
         }else if (holder instanceof  MessagePeer){
             ((MessagePeer)holder).mNameTextView.setText(bean.getSendName());
             ((MessagePeer)holder).mMsgTextView.setText(bean.getMessage());
-            ((MessagePeer)holder).mTimeTextView.setText(bean.getTime());
+            Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((MessagePeer)holder).mCircleImageView);
+
         }else if (holder instanceof FileMine){
             ((FileMine)holder).mNameTextView.setText(bean.getSendName());
-            Glide.with(mContext).load(bean.getFilePath()).into(((FileMine)holder).mFileImageView);
+            Glide.with(App.getsContext()).load(bean.getFilePath()).into(((FileMine)holder).mFileImageView);
             ((FileMine)holder).mFileImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -79,10 +83,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 }
             });
-            ((FileMine)holder).mTimeTextView.setText(bean.getTime());
+            Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((FileMine)holder).mCircleImageView);
+
         }else if (holder instanceof FilePeer){
             ((FilePeer)holder).mNameTextView.setText(bean.getSendName());
-            Glide.with(mContext).load(bean.getFilePath()).into(((FilePeer)holder).mFileImageView);
+            Glide.with(App.getsContext()).load(bean.getFilePath()).into(((FilePeer)holder).mFileImageView);
             ((FilePeer)holder).mFileImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -91,7 +96,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                   }
                 }
             });
-            ((FilePeer)holder).mTimeTextView.setText(bean.getTime());
+            Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((FilePeer)holder).mCircleImageView);
+
         }
     }
 
@@ -106,55 +112,59 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     class MessageMine extends RecyclerView.ViewHolder{
-        TextView mTimeTextView;
+
         TextView mMsgTextView;
         TextView mNameTextView;
+        CircleImageView mCircleImageView;
         public MessageMine(View itemView) {
             super(itemView);
-            mTimeTextView = itemView.findViewById(R.id.tv_time);
             mMsgTextView = itemView.findViewById(R.id.tv_msg_content);
             mNameTextView = itemView.findViewById(R.id.tv_mine_name);
+            mCircleImageView = itemView.findViewById(R.id.iv_mine_picture);
         }
     }
 
 
 
     class MessagePeer extends RecyclerView.ViewHolder{
-        TextView mTimeTextView;
+
         TextView mMsgTextView;
         TextView mNameTextView;
+        CircleImageView mCircleImageView;
         public MessagePeer(View itemView) {
             super(itemView);
-            mTimeTextView = itemView.findViewById(R.id.tv_time);
             mMsgTextView = itemView.findViewById(R.id.tv_msg_content);
             mNameTextView = itemView.findViewById(R.id.tv_peer_name);
+            mCircleImageView = itemView.findViewById(R.id.iv_peer_picture);
         }
     }
 
 
     class FileMine extends RecyclerView.ViewHolder{
-        TextView mTimeTextView;
+
         ImageView mFileImageView;
         TextView mNameTextView;
+        CircleImageView mCircleImageView;
         public FileMine(View itemView) {
             super(itemView);
-            mTimeTextView = itemView.findViewById(R.id.tv_time);
             mFileImageView = itemView.findViewById(R.id.iv_photo);
             mNameTextView = itemView.findViewById(R.id.tv_mine_name);
+            mCircleImageView = itemView.findViewById(R.id.iv_mine_picture);
         }
     }
 
 
 
     class FilePeer extends RecyclerView.ViewHolder{
-        TextView mTimeTextView;
+
         ImageView mFileImageView;
         TextView mNameTextView;
+        CircleImageView mCircleImageView;
         public FilePeer(View itemView) {
             super(itemView);
-            mTimeTextView = itemView.findViewById(R.id.tv_time);
             mFileImageView = itemView.findViewById(R.id.iv_photo);
             mNameTextView = itemView.findViewById(R.id.tv_peer_name);
+            mCircleImageView = itemView.findViewById(R.id.iv_peer_picture);
         }
     }
 }

@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -24,8 +26,10 @@ import java.net.Socket;
 public class App extends Application {
     public static String sName;
     public static String sIP;
+    public static int sProfilePicture;
     private static  Context sContext;
     private static File sCacheDir;
+    private static Map<String,List<SocketBean>> sHistoryMap;
 
 
     @Override
@@ -33,9 +37,16 @@ public class App extends Application {
         super.onCreate();
         sCacheDir = getExternalCacheDir();
 
-         Intent intent = new Intent(getApplicationContext(),ReceiveService.class);
+        Intent intent = new Intent(getApplicationContext(),ReceiveService.class);
          startService(intent);
          sContext = getApplicationContext();
+        sProfilePicture =0;
+        sHistoryMap = new HashMap<>();
+
+    }
+
+    public static Map<String, List<SocketBean>> getsHistoryMap() {
+        return sHistoryMap;
     }
 
     public static File getsCacheDir() {

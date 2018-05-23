@@ -3,9 +3,12 @@ package com.example.asus.lantalk.utils;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.example.asus.lantalk.listener.OnScanListener;
+import com.example.asus.lantalk.app.App;
+import com.example.asus.lantalk.constant.Constant;
+import com.example.asus.lantalk.entity.SocketBean;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -20,6 +23,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static com.example.asus.lantalk.constant.Constant.ACTION_SEND_MSG;
 import static com.example.asus.lantalk.constant.Constant.SERVER_MSG_PORT;
 import static com.example.asus.lantalk.constant.Constant.sLOCAL_HOST_IP;
 
@@ -41,25 +45,21 @@ public class ScanDeviceUtil {
 
     private static String mDevAddress;// 本机IP地址-完整
     private static String mLocAddress;// 局域网IP地址头,如：192.168.1.
-    private static Runtime mRun ;// 获取当前运行环境，来执行ping，相当于windows的cmd
+    private static Runtime mRun;// 获取当前运行环境，来执行ping，相当于windows的cmd
     private static Process mProcess = null;// 进程
     private static String mPing = "ping -c 1 -w 3 ";// 其中 -c 1为发送的次数，-w 表示发送后等待响应的时间
     private static List<String> mIpList = new ArrayList<>();// ping成功的IP地址
     private static ThreadPoolExecutor mExecutor;// 线程池对象
-    private static OnScanListener onScanListener;
 
     private static Socket mSocket;
 
-    public static void setOnScanListener(OnScanListener onScanListener) {
-        ScanDeviceUtil.onScanListener = onScanListener;
-    }
 
     /**
      * TODO<扫描局域网内ip，找到对应服务器>
      *
      * @return void
      */
-    public static List<String> scan() {
+    public static void scan() {
         mRun = Runtime.getRuntime();
         mDevAddress = getLocAddress();// 获取本机IP地址
         mLocAddress = getLocAddrIndex(mDevAddress);// 获取本地ip前缀
@@ -67,7 +67,7 @@ public class ScanDeviceUtil {
 
         if (TextUtils.isEmpty(mLocAddress)) {
             Log.e(TAG, "扫描失败，请检查wifi网络");
-            return mIpList;
+
         }
 
         /**
@@ -104,15 +104,14 @@ public class ScanDeviceUtil {
                             Log.d(TAG, "扫描成功,Ip地址为：" + currnetIp);
 
                             mIpList.add(currnetIp);
+                            connect(currnetIp);
                         } else {
                             // 扫描失败
                             Log.d(TAG, "扫描失败");
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "扫描异常" + e.toString());
-                        if (onScanListener != null) {
-                            onScanListener.OnFailed();
-                        }
+
 
                     } finally {
                         if (mProcess != null)
@@ -130,16 +129,12 @@ public class ScanDeviceUtil {
             try {
                 if (mExecutor.isTerminated()) {// 扫描结束,开始验证
                     Log.d(TAG, "扫描结束,总共成功扫描到" + mIpList.size() + "个设备.");
-                    if (onScanListener != null) {
-                        onScanListener.OnSuccess(mIpList);
-                    }
+
                     break;
                 }
             } catch (Exception e) {
                 // TODO: handle exception
-                if (onScanListener != null) {
-                    onScanListener.OnFailed();
-                }
+
             }
             try {
                 Thread.sleep(1000);
@@ -149,7 +144,7 @@ public class ScanDeviceUtil {
             }
         }
         mRun.gc();
-        return mIpList;
+
     }
 
     /**
@@ -210,62 +205,6 @@ public class ScanDeviceUtil {
         return null;
     }
 
-    public static String getIPAddressString() {
-        String IPAddress = null;
-        try {
-            Enumeration enumeration = NetworkInterface.getNetworkInterfaces();
-            InetAddress inetAddress = null;
-            while (enumeration.hasMoreElements()) {
-                NetworkInterface networkInterface = (NetworkInterface) enumeration.nextElement();
-                Enumeration<InetAddress> inetAddressEnumeration = networkInterface.getInetAddresses();
-                while (inetAddressEnumeration.hasMoreElements()) {
-                    inetAddress = inetAddressEnumeration.nextElement();
-                    if (inetAddress instanceof Inet6Address) {
-                        continue;
-                    }
-                    String ip = inetAddress.getHostAddress();
-                    if (!sLOCAL_HOST_IP.equals(ip)) {
-                        IPAddress = inetAddress.getHostAddress();
-                        break;
-                    }
-
-
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        return IPAddress;
-    }
-
-    public static Inet4Address getIPAddress() {
-        Inet4Address IPAddress = null;
-        try {
-            Enumeration enumeration = NetworkInterface.getNetworkInterfaces();
-            InetAddress inetAddress = null;
-            while (enumeration.hasMoreElements()) {
-                NetworkInterface networkInterface = (NetworkInterface) enumeration.nextElement();
-                Enumeration<InetAddress> inetAddressEnumeration = networkInterface.getInetAddresses();
-                while (inetAddressEnumeration.hasMoreElements()) {
-                    inetAddress = inetAddressEnumeration.nextElement();
-                    if (inetAddress instanceof Inet6Address) {
-                        continue;
-                    }
-                    String ip = inetAddress.getHostAddress();
-                    if (!sLOCAL_HOST_IP.equals(ip)) {
-                        IPAddress = (Inet4Address) inetAddress;
-
-                        break;
-                    }
-
-
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        return IPAddress;
-    }
 
     public static String getLocalIPAddress() {
         String localIPAddress = "";
@@ -284,54 +223,52 @@ public class ScanDeviceUtil {
         } catch (SocketException e) {
             e.printStackTrace();
         }
-        Log.e(TAG, "getLocalIPAddress: " + localIPAddress);
+
         return localIPAddress;
     }
 
-    public static List<String> scanPeer() {
-        mDevAddress = getLocAddress();// 获取本机IP地址
-        mLocAddress = getLocAddrIndex(mDevAddress);// 获取本地ip前缀
-
-        if (TextUtils.isEmpty(mLocAddress)) {
-            return mIpList;
-        }
-
+    public static void connect(final String ip) {
+        final SocketBean socketBean = new SocketBean();
+        socketBean.setStatus(Constant.REQUEST);
+        socketBean.setTime(TimeUtil.getCurrentTime());
+        socketBean.setSendIP(App.sIP);
+        socketBean.setSendName(App.sName);
+        socketBean.setProfilePicture(App.sProfilePicture);
+        socketBean.setReceiveIP(ip);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for (int i = 1; i < 255; i++) {
-                    final int lastAddress = i;
+                Socket socket = new Socket();
+                ObjectOutputStream os = null;
+                try {
+                    socket.bind(null);
+                    socket.connect((new InetSocketAddress(socketBean.getReceiveIP(), SERVER_MSG_PORT)), 3000);
+                    os = new ObjectOutputStream(socket.getOutputStream());
+                    os.writeObject(socketBean);
+                    os.flush();
+                } catch (IOException e) {
 
-                    String ip =  mLocAddress
-                            + lastAddress;
-                    String currnetIp = mLocAddress + lastAddress;
-                    if (mDevAddress.equals(currnetIp))
-                        continue;
-                    try {
-                        mSocket = new Socket();
-                        mSocket.bind(null);
-                        mSocket.connect((new InetSocketAddress(ip, SERVER_MSG_PORT)), 1000);
-
-                    } catch (Exception e) {
-                         continue;
+                    Log.e(TAG, "run: "+ip+"3000  端口没开" );
+                } finally {
+                    if (socket != null) {
+                        if (socket.isConnected()) {
+                            try {
+                                socket.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
 
-                    mIpList.add(ip);
-                    try {
-                        mSocket.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if (os != null) {
+                        try {
+                            os.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
-
-
-
-
                 }
-                onScanListener.OnSuccess(mIpList);
-
             }
         }).start();
-
-        return mIpList;
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2d3e56</color>
-    <color name="colorPrimaryDark">#2e3f57</color>
+    <color name="colorPrimary">#16182f</color>
+    <color name="colorPrimaryDark">#12172a</color>
     <color name="colorAccent">#2b2b2b</color>
 
     <drawable name="drawableItemBackground">#fdfdfe</drawable>
@@ -21,4 +21,6 @@
     <color name="color_white_background">#ffffff</color>
 
     <color name="color_blue_login">#2c3a57</color>
+
+    <color name="color_transparent_black">#98000000</color>
 </resources>

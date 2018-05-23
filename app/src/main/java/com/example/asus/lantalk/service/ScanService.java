@@ -1,17 +1,25 @@
 package com.example.asus.lantalk.service;
 
 import android.app.IntentService;
-import android.app.Service;
 import android.content.Intent;
-import android.os.Binder;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
-import com.example.asus.lantalk.listener.OnScanListener;
+import com.example.asus.lantalk.app.App;
+import com.example.asus.lantalk.constant.Constant;
+import com.example.asus.lantalk.entity.SocketBean;
 import com.example.asus.lantalk.utils.ScanDeviceUtil;
+import com.example.asus.lantalk.utils.TimeUtil;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.asus.lantalk.constant.Constant.SERVER_MSG_PORT;
+import static com.example.asus.lantalk.constant.Constant.SERVICE_RECEIVER;
 
 /**
  * Created by asus on 18-5-9.
@@ -27,19 +35,17 @@ public class ScanService extends IntentService {
         super(name);
     }
 
-
-
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    protected void onHandleIntent(@Nullable final Intent intent) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 ScanDeviceUtil.scan();
+                Intent receive = new Intent(SERVICE_RECEIVER);
+                App.getsContext().sendBroadcast(receive);
             }
         }).start();
     }
-
-
 
 
 }

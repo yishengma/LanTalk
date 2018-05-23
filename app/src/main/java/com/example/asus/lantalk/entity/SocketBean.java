@@ -13,11 +13,25 @@ public class SocketBean implements Serializable{
     private String mReceiveIP;
     private String mMessage;
     private String mTime;
+    private int mProfilePicture;
     private int mStatus;
     private int mType;
 
     private String mFilePath;
     private  boolean mIsFile ;
+
+    @Override
+    public boolean equals(Object obj) {
+        return getSendIP().equals(((SocketBean)obj).getSendIP());
+    }
+
+    public int getProfilePicture() {
+        return mProfilePicture;
+    }
+
+    public void setProfilePicture(int profilePicture) {
+        mProfilePicture = profilePicture;
+    }
 
     public String getFilePath() {
         return mFilePath == null ? "" : mFilePath;

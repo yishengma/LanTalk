@@ -6,8 +6,21 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="overlapAnchor">false</item>
+        <item name="android:popupBackground">@color/color_white_text</item>
+        <item name="actionMenuTextColor">#595b5d</item>
     </style>
+    <style name="MainActivityTheme" parent="AppTheme">
 
+    </style>
+    <style name="ToolbarPopupTheme" parent="@style/ThemeOverlay.AppCompat.Dark">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="actionOverflowMenuStyle">@style/OverflowMenuStyle</item> <!--新增一个item，用于控制menu-->
+    </style>
+    <style name="OverflowMenuStyle" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
+        <item name="overlapAnchor">false</item>
+        <item name="android:popupBackground">@color/color_white_background</item><!--把该属性改为false即可使menu位置位于toolbar之下-->
+    </style>
 
     <style name="LoginTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorAccent">@color/color_text_login</item>
@@ -28,6 +41,29 @@
 
     <style name="MyDialogStyle">
         <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+
+    <style name="PickDialogStyle">
+        <item name="android:windowBackground">@color/color_transparent_black</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="ImageDialogStyle">
+        <item name="android:windowBackground">@color/colorPrimary</item>
         <item name="android:windowFrame">@null</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>

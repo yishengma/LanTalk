@@ -45,11 +45,12 @@ import java.util.List;
 
 import static com.example.asus.lantalk.constant.Constant.ACTION_SEND_FILE;
 import static com.example.asus.lantalk.constant.Constant.ACTION_SEND_MSG;
+import static com.example.asus.lantalk.constant.Constant.CONNECT;
 import static com.example.asus.lantalk.constant.Constant.MINEFILE;
 import static com.example.asus.lantalk.constant.Constant.MINEMSG;
-import static com.example.asus.lantalk.constant.Constant.RECEIVE;
 import static com.example.asus.lantalk.constant.Constant.SEND_PEER_BEAN;
 import static com.example.asus.lantalk.constant.Constant.SEND_PEER_NAME;
+import static com.example.asus.lantalk.constant.Constant.SNED_PEER_PICTURE;
 import static com.example.asus.lantalk.constant.Constant.sCHOOSEALBUM;
 
 public class TalkActivity extends AppCompatActivity implements
@@ -67,6 +68,7 @@ public class TalkActivity extends AppCompatActivity implements
     private String mPhotoPath;//背景照的路径
     private static final String TAG = "TalkActivity";
     private String mPeerIP;
+
 
 
     @Override
@@ -98,9 +100,14 @@ public class TalkActivity extends AppCompatActivity implements
         mEditText = findViewById(R.id.et_input);
         mSendButton = findViewById(R.id.btn_send);
         mBeanList = new ArrayList<>();
-        mAdapter = new MessageAdapter(mBeanList, this);
+        mBeanList.addAll(App.getsHistoryMap().get(mPeerIP));
+        mAdapter = new MessageAdapter(mBeanList);
+
         mRvMsgContent.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRvMsgContent.setAdapter(mAdapter);
+        if (mBeanList.size()!=0){
+            mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
+        }
         mAdapter.setOnClickListener(new MessageAdapter.OnClickListener() {
             @Override
             public void OnClick(String path) {
@@ -112,6 +119,7 @@ public class TalkActivity extends AppCompatActivity implements
         SendIntentService.setSendListener(this);
         ReceiveService.setReceiveListener(this);
 
+
     }
 
 
@@ -122,15 +130,18 @@ public class TalkActivity extends AppCompatActivity implements
                 if (!TextUtils.isEmpty(mEditText.getText().toString())) {
                     Intent intent = new Intent(TalkActivity.this, SendIntentService.class);
                     mSocketBean = new SocketBean();
+
                     mSocketBean.setReceiveIP(mPeerIP);
                     mSocketBean.setMessage(mEditText.getText().toString());
                     mSocketBean.setSendIP(App.sIP);
                     mSocketBean.setSendName(App.sName);
                     mSocketBean.setTime(TimeUtil.getCurrentTime());
                     intent.setAction(Constant.ACTION_SEND_MSG);
-                    mSocketBean.setStatus(Constant.RECEIVE);
+                    mSocketBean.setStatus(Constant.CONNECT);
                     mSocketBean.setType(Constant.MINEMSG);
+                    mSocketBean.setProfilePicture(App.sProfilePicture);
                     intent.putExtra(SEND_PEER_BEAN, mSocketBean);
+
                     startService(intent);
 
                 }
@@ -183,8 +194,11 @@ public class TalkActivity extends AppCompatActivity implements
                     mSocketBean.setFile(true);
                     mSocketBean.setFilePath(mPhotoPath);
                     mSocketBean.setSendName(App.sName);
-                    mSocketBean.setStatus(RECEIVE);
+                    mSocketBean.setSendIP(App.sIP);
+                    mSocketBean.setProfilePicture(App.sProfilePicture);
+                    mSocketBean.setStatus(CONNECT);
                     mSocketBean.setType(MINEFILE);
+                    mSocketBean.setProfilePicture(App.sProfilePicture);
                     intent.setAction(Constant.ACTION_SEND_FILE);
                     intent.putExtra(SEND_PEER_BEAN, mSocketBean);
                     startService(intent);
@@ -207,10 +221,6 @@ public class TalkActivity extends AppCompatActivity implements
         });
     }
 
-    @Override
-    public void onReceiceFailed() {
-
-    }
 
     @Override
     public void onSendSuccess(String type) {
@@ -223,6 +233,13 @@ public class TalkActivity extends AppCompatActivity implements
                     mAdapter.notifyDataSetChanged();
                     mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
                     mEditText.setText("");
+
+                    //保存记录 注意这里的ip
+                    for (String ip:App.getsHistoryMap().keySet()) {
+                        if (ip.equals(mSocketBean.getReceiveIP())){
+                            App.getsHistoryMap().get(ip).add(mSocketBean);
+                        }
+                    }
                 }
             });
         } else if (type.equals(ACTION_SEND_FILE)) {
@@ -233,6 +250,12 @@ public class TalkActivity extends AppCompatActivity implements
                     mBeanList.add(mSocketBean);
                     mAdapter.notifyDataSetChanged();
                     mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
+                    //保存记录 注意这里的ip
+                    for (String ip:App.getsHistoryMap().keySet()) {
+                        if (ip.equals(mSocketBean.getReceiveIP())){
+                            App.getsHistoryMap().get(ip).add(mSocketBean);
+                        }
+                    }
                 }
             });
         }

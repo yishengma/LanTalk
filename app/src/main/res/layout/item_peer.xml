@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="52dp"
+    android:layout_height="60dp"
     android:background="@drawable/item_background_selector"
     android:clickable="true"
     android:orientation="vertical">
@@ -9,34 +9,43 @@
     <RelativeLayout
         android:id="@+id/rl"
         android:layout_width="match_parent"
-        android:layout_height="51dp">
+        android:layout_height="59dp">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/iv_profile_picture"
-            android:layout_width="32dp"
-            android:layout_height="33dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:background="@drawable/iv_logo" />
+            android:src="@drawable/iv_head_1" />
 
         <TextView
             android:id="@+id/tv_name"
+            android:layout_alignTop="@+id/iv_profile_picture"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/iv_profile_picture"
             android:gravity="center_vertical"
-            android:text="名字"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="17.5sp" />
+        <TextView
+            android:maxLines="1"
+            android:layout_toRightOf="@id/iv_profile_picture"
+            android:layout_below="@+id/tv_name"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/tv_msg_newly"
+            android:textSize="13.5sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </RelativeLayout>
-
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginLeft="10dp"
-        android:background="#d1cdcd" />
+        android:background="#baedecec" />
 
 
 </LinearLayout>

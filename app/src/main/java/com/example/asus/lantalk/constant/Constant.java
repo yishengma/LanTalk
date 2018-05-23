@@ -18,6 +18,7 @@ public class Constant {
 
     public static final String SEND_PEER_BEAN = "send";
     public static final String SEND_PEER_NAME = "name";
+    public static final String SNED_PEER_PICTURE = "picture";
 
 
     public static final int MINEMSG = 0;
@@ -26,13 +27,18 @@ public class Constant {
     public static final int PEERFILE = 3;
 
 
-    public static final int REQUEST = 0;
-    public static final int CONNECT = 1;
-    public static final int REFUSE = 2;
-    public static final int RECEIVE = 3;
+    public static final int REQUEST = 0;//发送连接请求
+    public static final int CONNECT = 2;
+
+
+    public static final String SERVICE_RECEIVER = "scan";//扫描后台广播的接收
 
 
     public static final int sCHOOSEALBUM = 0;
+
+
+    public static final int sITEM = 0;
+    public static final int sEMPTY = 1;
 
 
     public static final int[] PROFILEPHOTO = {R.drawable.iv_head_1, R.drawable.iv_head_2, R.drawable.iv_head_3,

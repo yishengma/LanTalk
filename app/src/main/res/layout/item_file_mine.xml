@@ -10,7 +10,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:padding="2dp"
-        android:text="2012-09-01 18:30:21"
         android:textColor="@color/color_white_text"
 
         android:textSize="12sp" />
@@ -29,10 +28,10 @@
             android:layout_marginRight="10dp"
             android:orientation="vertical">
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/iv_mine_picture"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/iv_logo" />
 
             <TextView

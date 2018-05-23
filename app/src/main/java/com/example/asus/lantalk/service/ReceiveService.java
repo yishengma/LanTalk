@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.io.StreamCorruptedException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import static com.example.asus.lantalk.constant.Constant.PEERFILE;
 
@@ -43,7 +44,6 @@ public class ReceiveService extends Service {
     private ObjectInputStream mObjectInputStream;
 
 
-
     private DataInputStream mDataInputStream = null;
     private InputStream mInputStream;
     private OutputStream mOutputStream;
@@ -63,18 +63,13 @@ public class ReceiveService extends Service {
 
     public interface OnReceiveListener {
         void onReceiveCallBack(SocketBean bean);
-
-        void onReceiceFailed();
     }
 
     public interface OnConnectListener {
-        void onRefuseCallBack();
-
-        void onAccessCallBack(SocketBean bean);
 
         void onRequestCallBack(SocketBean bean);
 
-        void onConnectFailed();
+        void onReceiveCallBack(SocketBean bean);
     }
 
     @Nullable
@@ -109,12 +104,6 @@ public class ReceiveService extends Service {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    if (mConnectListener != null) {
-                        mConnectListener.onConnectFailed();
-                    }
-                    if (mReceiveListener != null) {
-                        mReceiveListener.onReceiceFailed();
-                    }
 
                 } finally {
                     try {
@@ -153,9 +142,7 @@ public class ReceiveService extends Service {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    if (mReceiveListener != null) {
-                        mReceiveListener.onReceiceFailed();
-                    }
+
 
                 } finally {
                     try {
@@ -183,15 +170,24 @@ public class ReceiveService extends Service {
     public void receiveMsg(Object object) throws Exception {
 
         SocketBean socketBeen = (SocketBean) object;
-        if (mConnectListener != null && socketBeen.getStatus() == Constant.CONNECT) {
-            mConnectListener.onAccessCallBack(socketBeen);
-        } else if (mConnectListener != null && socketBeen.getStatus() == Constant.REFUSE) {
-            mConnectListener.onRefuseCallBack();
-        } else if (mConnectListener != null && socketBeen.getStatus() == Constant.REQUEST) {
+        //收到链接请求
+        if (mConnectListener != null && socketBeen.getStatus() == Constant.REQUEST) {
             mConnectListener.onRequestCallBack(socketBeen);
-        } else if (mReceiveListener != null && socketBeen.getStatus() == Constant.RECEIVE) {
+            App.getsHistoryMap().put(socketBeen.getSendIP(),new ArrayList<SocketBean>());
+            //收到消息
+        } else if (mReceiveListener != null && socketBeen.getStatus() == Constant.CONNECT) {
             socketBeen.setType(Constant.PEERMSG);
             mReceiveListener.onReceiveCallBack(socketBeen);
+            //保存记录
+            for (String ip:App.getsHistoryMap().keySet()) {
+                if (ip.equals(socketBeen.getSendIP())){
+                    App.getsHistoryMap().get(ip).add(socketBeen);
+                }
+            }
+
+        }
+        if (mConnectListener!=null&& socketBeen.getStatus() == Constant.CONNECT){
+            mConnectListener.onReceiveCallBack(socketBeen);
         }
     }
 
@@ -209,15 +205,25 @@ public class ReceiveService extends Service {
         while ((length = mDataInputStream.read(bytes, 0, bytes.length)) != -1) {
             mFileOutputStream.write(bytes, 0, length);
             mFileOutputStream.flush();
-
-
         }
         SocketBean socketBean = new SocketBean();
         socketBean.setFilePath(file.getAbsolutePath());
         socketBean.setFile(true);
         socketBean.setType(PEERFILE);
-        if (mReceiveListener!=null){
+        socketBean.setSendIP((""+socket.getInetAddress()).replace("/",""));
+        //保存记录
+        for (String ip:App.getsHistoryMap().keySet()) {
+            if (ip.equals(socketBean.getSendIP())){
+                App.getsHistoryMap().get(ip).add(socketBean);
+            }
+        }
+        if (mReceiveListener != null) {
+
             mReceiveListener.onReceiveCallBack(socketBean);
+        }
+        if (mConnectListener!=null){
+            socketBean.setMessage("[图片]");
+            mConnectListener.onReceiveCallBack(socketBean);
         }
 
     }

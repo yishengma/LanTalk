@@ -39,9 +39,9 @@
 
         <ImageView
             android:id="@+id/bg_img"
+            android:background="@drawable/iv_talk"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/iv_chat_bg"
+            android:layout_height="match_parent"
             android:scaleType="centerCrop" />
     </ScrollView>
 
@@ -53,6 +53,7 @@
         android:id="@+id/ll_talk"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,50 +71,62 @@
     <View
         android:layout_width="0dp"
         android:layout_height="0.5dp"
-        android:background="@color/colorPrimary"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/color_white_background"
         app:layout_constraintBottom_toTopOf="@id/bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 
-    <android.support.constraint.ConstraintLayout
-
+    <RelativeLayout
         android:id="@+id/bottom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/color_white_text"
+        android:layout_height="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <EditText
+            android:layout_centerVertical="true"
             android:id="@+id/et_input"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
+            android:layout_toLeftOf="@+id/btn_send"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
-            android:maxLines="3"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn_send"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:maxLines="1"
+            android:textColor="@color/color_white_text"
+            android:background="@android:color/transparent"
+           />
 
 
         <Button
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
             android:id="@+id/btn_send"
-            android:layout_width="50dp"
-            android:layout_height="35dp"
+            android:layout_width="45dp"
+            android:layout_height="32dp"
             android:layout_marginBottom="10dp"
             android:layout_marginEnd="5dp"
-            android:background="@color/color_btn_login"
+            android:background="@drawable/btn_send_background"
             android:text="@string/send"
+            android:textSize="13sp"
             android:textColor="@color/color_white_text"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+           />
 
+        <View
+            android:background="@color/color_white_background"
+            android:layout_below="@+id/et_input"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toLeftOf="@+id/btn_send"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
 
-    </android.support.constraint.ConstraintLayout>
+    </RelativeLayout>
 
 
 </android.support.constraint.ConstraintLayout>
