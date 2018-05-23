@@ -6,6 +6,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "请输入用户名", Toast.LENGTH_SHORT).show();
                 } else {
                     App.sName = mNameEditText.getText().toString();
-                    App.sIP = ScanDeviceUtil.getLocalIPAddress();
+                    App.sIP = ScanDeviceUtil.getLocAddress();
                     MainActivity.actionStart(LoginActivity.this);
                     finish();
                 }

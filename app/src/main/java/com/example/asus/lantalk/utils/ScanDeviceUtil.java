@@ -163,7 +163,7 @@ public class ScanDeviceUtil {
      *
      * @return String
      */
-    private static String getLocAddress() {
+    public static String getLocAddress() {
         String ipaddress = "";
 
         try {
