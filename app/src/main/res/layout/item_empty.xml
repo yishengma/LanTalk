@@ -7,7 +7,7 @@
     android:layout_gravity="center"
     android:textColor="@color/colorPrimaryDark"
     android:text="空空如也!"
-    android:textSize="18sp"
+    android:textSize="@dimen/dimen_empty_text"
     android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />

@@ -7,31 +7,30 @@
     <TextView
         android:id="@+id/tv_time"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="12sp"
-        android:padding="2dp"
+        android:layout_height="@dimen/dimen_talk_empty_height"
+
         android:textColor="@color/color_white_text"
 
         android:layout_gravity="center_horizontal"/>
 
     <LinearLayout
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="@dimen/dimen_talk_msg_margin"
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
+        android:layout_marginTop="@dimen/dimen_talk_margin"
         android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="@dimen/dimen_talk_margin_left"
             android:orientation="vertical" >
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/iv_peer_picture"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/dimen_talk_image_size"
+                android:layout_height="@dimen/dimen_talk_image_size"
                 android:src="@drawable/iv_logo"
                 android:layout_gravity="center_horizontal"/>
 
@@ -42,20 +41,19 @@
                 android:layout_gravity="center"
                 android:text="用户"
                 android:textColor="@color/color_white_text"
-
-                android:textSize="14sp" />
+                android:textSize="@dimen/dimen_talk_name_size" />
         </LinearLayout>
 
         <TextView
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="@dimen/dimen_talk_margin_left"
             android:id="@+id/tv_msg_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minHeight="40dp"
-            android:layout_marginTop="10dp"
+            android:minHeight="@dimen/dimen_talk_msg_minh"
+            android:layout_marginTop="@dimen/dimen_talk_msg_margin_top"
             android:background="@drawable/iv_talk_peer_white"
-            android:padding="10dp"
-            android:textSize="16sp"
+            android:padding="@dimen/dimen_talk_msg_padding"
+            android:textSize="@dimen/dimen_talk_msg_text"
             android:textColor="@color/color_white_text"
             android:gravity="center_vertical"
             android:text=""

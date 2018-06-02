@@ -14,7 +14,7 @@
         android:layout_marginLeft="@dimen/dimen_margin_sixty"
         android:id="@+id/vp_head_portrait"
         android:layout_width="match_parent"
-        android:layout_height="200dp">
+        android:layout_height="@dimen/dimen_pick_height">
 
     </android.support.v4.view.ViewPager>
 </LinearLayout>

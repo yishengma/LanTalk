@@ -25,4 +25,52 @@
     <dimen name="dimen_padding_bottom_introduction">30dp</dimen>
     <dimen name="dimen_margin_top_et">100dp</dimen>
 
+
+
+    <dimen name="dimen_dialog_height">250dp</dimen>
+
+    <dimen name="dimen_title_size">18sp</dimen>
+    <dimen name="dimen_scroll_margin_top">56dp</dimen>
+
+    <dimen name="dimen_loading_width">150dp</dimen>
+    <dimen name="dimen_loading_height">110dp</dimen>
+    <dimen name="dimen_loading_padding_bottom">10dp</dimen>
+    <dimen name="dimen_loading_padding_top">10dp</dimen>
+    <dimen name="dimen_progressbar_size">35dp</dimen>
+    <dimen name="dimen_loading_text">15sp</dimen>
+    <dimen name="dimen_loading_text_margin">15dp</dimen>
+
+
+    <dimen name="dimen_pick_height">200dp</dimen>
+    <dimen name="dimen_empty_text">18sp</dimen>
+
+
+
+    <dimen name="dimen_talk_empty_height">12dp</dimen>
+    <dimen name="dimen_talk_margin">3dp</dimen>
+    <dimen name="dimen_talk_margin_left">10dp</dimen>
+    <dimen name="dimen_talk_margin_right">10dp</dimen>
+    <dimen name="dimen_talk_image_size">40dp</dimen>
+    <dimen name="dimen_talk_name_size">14sp</dimen>
+    <dimen name="dimen_talk_picture_width">80dp</dimen>
+    <dimen name="dimen_talk_picture_height">120dp</dimen>
+    <dimen name="dimen_talk_picture_margin">10dp</dimen>
+    <dimen name="dimen_talk_picture_minh">40dp</dimen>
+    <dimen name="dimen_peer_height">60dp</dimen>
+    <dimen name="dimen_peer_conent_height">59dp</dimen>
+    <dimen name="dimen_peer_picture_size">50dp</dimen>
+    <dimen name="dimen_peer_margin_left">10dp</dimen>
+    <dimen name="dimen_peer_name_height">30dp</dimen>
+    <dimen name="dimen_divider_height">1dp</dimen>
+    <dimen name="dimen_pick_size">200dp</dimen>
+    <dimen name="dimen_talk_msg_margin">10dp</dimen>
+    <dimen name="dimen_talk_msg_minh">40dp</dimen>
+    <dimen name="dimen_talk_msg_text">16sp</dimen>
+    <dimen name="dimen_talk_msg_padding">10dp</dimen>
+    <dimen name="dimen_talk_msg_margin_top">10dp</dimen>
+    <dimen name="dimen_padding_right">15dp</dimen>
+
+
+    <dimen name="dimen_peer_name">17.5sp</dimen>
+    <dimen name="dimen_peer_msg">13.5sp</dimen>
 </resources>

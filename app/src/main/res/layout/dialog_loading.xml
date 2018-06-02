@@ -12,13 +12,13 @@
         android:background="@drawable/loading_bg"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp">
+        android:paddingBottom="@dimen/dimen_loading_padding_bottom"
+        android:paddingTop="@dimen/dimen_loading_padding_top">
 
         <ProgressBar
             android:id="@+id/progressBar1"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="@dimen/dimen_progressbar_size"
+            android:layout_height="@dimen/dimen_progressbar_size"
             android:layout_gravity="center_horizontal"
             android:indeterminateBehavior="repeat"
             android:indeterminateDrawable="@drawable/dialog_loading"
@@ -29,10 +29,10 @@
             android:id="@+id/tipTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="@dimen/dimen_loading_text_margin"
             android:text="正在搜索对等方..."
             android:textColor="@color/color_white_text"
-            android:textSize="15sp" />
+            android:textSize="@dimen/dimen_loading_text" />
     </LinearLayout>
 
 </LinearLayout>

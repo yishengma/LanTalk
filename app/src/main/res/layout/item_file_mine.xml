@@ -7,31 +7,29 @@
     <TextView
         android:id="@+id/tv_time"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/dimen_talk_empty_height"
         android:layout_gravity="center_horizontal"
-        android:padding="2dp"
         android:textColor="@color/color_white_text"
-
-        android:textSize="12sp" />
+         />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3dp">
+        android:layout_marginTop="@dimen/dimen_talk_margin">
 
         <LinearLayout
             android:id="@+id/ll_talk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="@dimen/dimen_talk_margin_left"
+            android:layout_marginRight="@dimen/dimen_talk_margin_right"
             android:orientation="vertical">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/iv_mine_picture"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/dimen_talk_image_size"
+                android:layout_height="@dimen/dimen_talk_image_size"
                 android:src="@drawable/iv_logo" />
 
             <TextView
@@ -42,17 +40,17 @@
                 android:text="用户名"
                 android:textColor="@color/color_white_text"
 
-                android:textSize="14sp" />
+                android:textSize="@dimen/dimen_talk_name_size" />
         </LinearLayout>
 
         <ImageView
             android:id="@+id/iv_photo"
-            android:layout_width="80dp"
-            android:layout_height="120dp"
+            android:layout_width="@dimen/dimen_talk_picture_width"
+            android:layout_height="@dimen/dimen_talk_picture_height"
             android:layout_alignParentTop="true"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="@dimen/dimen_talk_picture_margin"
             android:layout_toStartOf="@+id/ll_talk"
-            android:minHeight="40dp"
+            android:minHeight="@dimen/dimen_talk_picture_minh"
             android:scaleType="centerCrop" />
     </RelativeLayout>
 

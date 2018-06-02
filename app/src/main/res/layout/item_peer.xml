@@ -1,51 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="@dimen/dimen_peer_height"
     android:background="@drawable/item_background_selector"
     android:clickable="true"
+    android:focusable="true"
     android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/rl"
         android:layout_width="match_parent"
-        android:layout_height="59dp">
+        android:layout_height="@dimen/dimen_peer_conent_height">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/iv_profile_picture"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/dimen_peer_picture_size"
+            android:layout_height="@dimen/dimen_peer_picture_size"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="@dimen/dimen_peer_margin_left"
             android:src="@drawable/iv_head_1" />
 
         <TextView
             android:id="@+id/tv_name"
             android:layout_alignTop="@+id/iv_profile_picture"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="@dimen/dimen_peer_name_height"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="@dimen/dimen_peer_margin_left"
             android:layout_toRightOf="@+id/iv_profile_picture"
             android:gravity="center_vertical"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="17.5sp" />
+            android:textSize="@dimen/dimen_peer_name" />
         <TextView
             android:maxLines="1"
             android:layout_toRightOf="@id/iv_profile_picture"
             android:layout_below="@+id/tv_name"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="@dimen/dimen_peer_margin_left"
             android:id="@+id/tv_msg_newly"
-            android:textSize="13.5sp"
+            android:textSize="@dimen/dimen_peer_msg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
     </RelativeLayout>
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginLeft="10dp"
-        android:background="#baedecec" />
+        android:layout_height="@dimen/dimen_divider_height"
+        android:layout_marginLeft="@dimen/dimen_peer_margin_left"
+        android:background="@color/color_divider" />
 
 
 </LinearLayout>
