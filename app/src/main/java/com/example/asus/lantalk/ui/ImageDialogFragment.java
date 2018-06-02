@@ -19,7 +19,7 @@ import com.example.asus.lantalk.R;
 
 
 /**
- * Created by asus on 18-5-16.
+ * 图像的查看
  */
 
 public class ImageDialogFragment extends DialogFragment {

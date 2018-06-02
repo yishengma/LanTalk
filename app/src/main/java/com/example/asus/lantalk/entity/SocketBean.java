@@ -3,7 +3,7 @@ package com.example.asus.lantalk.entity;
 import java.io.Serializable;
 
 /**
- * Created by asus on 18-5-9.
+ * 通信Socket 的内容
  */
 
 public class SocketBean implements Serializable{

@@ -57,6 +57,7 @@
             android:background="@drawable/iv_talk_mine_white"
             android:minHeight="40dp"
             android:padding="10dp"
+            android:paddingRight="15dp"
             android:gravity="center_vertical"
             android:text=""
             android:textColor="@color/color_white_text"

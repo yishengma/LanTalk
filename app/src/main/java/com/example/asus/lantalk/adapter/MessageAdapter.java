@@ -22,9 +22,8 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by asus on 18-5-11.
+ * 信息 RecyclerView 的 Adapter
  */
-
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<SocketBean> mBeans;
     private OnClickListener mOnClickListener;
@@ -44,14 +43,18 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        //聊天界面
+        // 信息的ViewHolder
+        // 我的消息
         if (viewType == Constant.MINEMSG){
            return  new MessageMine(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_talk_mine,parent,false));
-
+        //对等方的消息
         }else if (viewType == Constant.PEERMSG){
             return  new MessagePeer(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_talk_peer,parent,false));
+        //我的文件
         }else if (viewType==Constant.MINEFILE){
             return  new FileMine(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file_mine,parent,false));
-
+        //对等方的文件
         }else if (viewType==Constant.PEERFILE){
             return  new FilePeer(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file_peer,parent,false));
 
@@ -62,15 +65,18 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final SocketBean bean = mBeans.get(position);
+        //我的消息
         if (holder instanceof MessageMine) {
             ((MessageMine)holder).mNameTextView.setText(bean.getSendName());
             ((MessageMine)holder).mMsgTextView.setText(bean.getMessage());
+            //加载头像
             Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((MessageMine)holder).mCircleImageView);
+        //对等方的消息
         }else if (holder instanceof  MessagePeer){
             ((MessagePeer)holder).mNameTextView.setText(bean.getSendName());
             ((MessagePeer)holder).mMsgTextView.setText(bean.getMessage());
             Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((MessagePeer)holder).mCircleImageView);
-
+          //我的文件
         }else if (holder instanceof FileMine){
             ((FileMine)holder).mNameTextView.setText(bean.getSendName());
             Glide.with(App.getsContext()).load(bean.getFilePath()).into(((FileMine)holder).mFileImageView);
@@ -84,7 +90,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             });
             Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((FileMine)holder).mCircleImageView);
-
+            //对等方的文件
         }else if (holder instanceof FilePeer){
             ((FilePeer)holder).mNameTextView.setText(bean.getSendName());
             Glide.with(App.getsContext()).load(bean.getFilePath()).into(((FilePeer)holder).mFileImageView);

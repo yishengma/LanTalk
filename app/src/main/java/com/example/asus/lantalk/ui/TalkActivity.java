@@ -3,6 +3,7 @@ package com.example.asus.lantalk.ui;
 import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,6 +40,7 @@ import com.example.asus.lantalk.constant.Constant;
 import com.example.asus.lantalk.entity.SocketBean;
 import com.example.asus.lantalk.service.ReceiveService;
 import com.example.asus.lantalk.service.SendIntentService;
+import com.example.asus.lantalk.utils.ProfilePicturePickUtil;
 import com.example.asus.lantalk.utils.TimeUtil;
 
 import java.util.ArrayList;
@@ -124,6 +127,7 @@ public class TalkActivity extends AppCompatActivity implements
 
 
     private void initListener() {
+        //发送消息
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -160,6 +164,7 @@ public class TalkActivity extends AppCompatActivity implements
             }
             break;
             case R.id.menu_picture: {
+                //选择图片
                 if (ContextCompat.checkSelfPermission(TalkActivity.this,
                         android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(TalkActivity.this,
@@ -207,39 +212,52 @@ public class TalkActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * 接收消息后的回调
+     * @param bean
+     */
     @Override
     public void onReceiveCallBack(final SocketBean bean) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                bean.setSendName(mName.getText().toString());
-                mBeanList.add(bean);
-                mAdapter.notifyDataSetChanged();
-                mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
+                if (bean.getStatus()==Constant.CONNECT){
+                    bean.setSendName(mName.getText().toString());
+                    mBeanList.add(bean);
+                    mAdapter.notifyDataSetChanged();
+                    mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
 
+                }else if (bean.getStatus()==Constant.DISCONNECT){
+                     showDialog();
+                }
             }
         });
     }
 
-
+    /**
+     * 发送消息后的回调，显示在列表上
+     * @param type
+     */
     @Override
     public void onSendSuccess(String type) {
         if (type.equals(ACTION_SEND_MSG)) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mSocketBean.setType(MINEMSG);
-                    mBeanList.add(mSocketBean);
-                    mAdapter.notifyDataSetChanged();
-                    mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
-                    mEditText.setText("");
+                 if (mSocketBean!=null&&(mSocketBean.getStatus()==Constant.CONNECT||mSocketBean.getStatus()==Constant.REQUEST)){
+                     mSocketBean.setType(MINEMSG);
+                     mBeanList.add(mSocketBean);
+                     mAdapter.notifyDataSetChanged();
+                     mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
+                     mEditText.setText("");
 
-                    //保存记录 注意这里的ip
-                    for (String ip:App.getsHistoryMap().keySet()) {
-                        if (ip.equals(mSocketBean.getReceiveIP())){
-                            App.getsHistoryMap().get(ip).add(mSocketBean);
-                        }
-                    }
+                     //保存记录 注意这里的ip
+                     for (String ip:App.getsHistoryMap().keySet()) {
+                         if (ip.equals(mSocketBean.getReceiveIP())){
+                             App.getsHistoryMap().get(ip).add(mSocketBean);
+                         }
+                     }
+                 }
                 }
             });
         } else if (type.equals(ACTION_SEND_FILE)) {
@@ -261,6 +279,9 @@ public class TalkActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * 发送失败后的回调
+     */
     @Override
     public void onSendFail() {
         runOnUiThread(new Runnable() {
@@ -278,10 +299,29 @@ public class TalkActivity extends AppCompatActivity implements
     }
 
 
-    public static void actionStart(Context context, String address, String name) {
+    /**
+     * 返回对话框的显示
+     */
+    private void showDialog(){
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setIcon(ProfilePicturePickUtil.getImageDrawable(getIntent().getIntExtra(SNED_PEER_PICTURE,0)))//设置标题的图片
+                .setTitle(getIntent().getStringExtra(SEND_PEER_NAME))//设置对话框的标题
+                .setMessage("已退出！")//设置对话框的内容
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                        dialog.dismiss();
+                    }
+                }).create();
+        dialog.show();
+    }
+
+    public static void actionStart(Context context, String address, String name,int picture) {
         Intent intent = new Intent(context, TalkActivity.class);
         intent.putExtra(SEND_PEER_BEAN, address);
         intent.putExtra(SEND_PEER_NAME, name);
+        intent.putExtra(SNED_PEER_PICTURE,picture);
         context.startActivity(intent);
     }
 
@@ -324,5 +364,10 @@ public class TalkActivity extends AppCompatActivity implements
         return path;
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //需要将接口置为 null ,否则 Activity 可能不在Top
+        ReceiveService.setReceiveListener(null);
+    }
 }

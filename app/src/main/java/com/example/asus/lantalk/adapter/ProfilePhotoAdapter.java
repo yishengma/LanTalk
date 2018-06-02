@@ -13,9 +13,8 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by asus on 18-5-22.
+ *  头像选择的 Adapter
  */
-
 public class ProfilePhotoAdapter extends PagerAdapter {
     private Context mContext;
     private static final String TAG = "ProfilePhotoAdapter";

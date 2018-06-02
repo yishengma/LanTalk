@@ -22,7 +22,7 @@ import static com.example.asus.lantalk.constant.Constant.SERVER_MSG_PORT;
 import static com.example.asus.lantalk.constant.Constant.SERVICE_RECEIVER;
 
 /**
- * Created by asus on 18-5-9.
+ * 扫描对等方的服务
  */
 
 public class ScanService extends IntentService {

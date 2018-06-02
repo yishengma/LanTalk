@@ -8,7 +8,7 @@ import android.widget.Toast;
 import com.example.asus.lantalk.utils.LoadingDialogUtil;
 
 /**
- * Created by asus on 18-5-23.
+ * 搜索对等放方结束后的广播接收器
  */
 
 public class ScanResultReceiver extends BroadcastReceiver {

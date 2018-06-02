@@ -8,7 +8,7 @@ import android.telephony.TelephonyManager;
 import static android.content.Context.TELEPHONY_SERVICE;
 
 /**
- * Created by asus on 18-5-10.
+ * 网络的判读
  */
 
 public class NetWorkUtil {

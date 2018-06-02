@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity
         implements SendIntentService.OnSendListener,
         ReceiveService.OnConnectListener {
     private Toolbar mToolbar;
-    private List<SocketBean> mSocketBeanList;
+
     private PeerAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private ScanResultReceiver mScanResultReceiver;
@@ -50,13 +50,19 @@ public class MainActivity extends AppCompatActivity
 
         initView();
         initBroadcast();
+    }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mAdapter!=null){
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     private void initView() {
-        mSocketBeanList = new ArrayList<>();
-        mAdapter = new PeerAdapter(mSocketBeanList, this);
+
+        mAdapter = new PeerAdapter(App.getmSocketBeanList(), this);
         mRecyclerView = findViewById(R.id.rv_devices);
         mToolbar = findViewById(R.id.tool_bar);
         setSupportActionBar(mToolbar);
@@ -67,7 +73,7 @@ public class MainActivity extends AppCompatActivity
         mAdapter.setOnClickListener(new PeerAdapter.OnClickListener() {
             @Override
             public void OnClick(SocketBean socketBean) {
-                TalkActivity.actionStart(MainActivity.this,socketBean.getSendIP(),socketBean.getSendName());
+                TalkActivity.actionStart(MainActivity.this,socketBean.getSendIP(),socketBean.getSendName(),socketBean.getProfilePicture());
             }
         });
     }
@@ -79,11 +85,15 @@ public class MainActivity extends AppCompatActivity
         registerReceiver(mScanResultReceiver, intentFilter);
     }
 
+    /**
+     * 请求成功后的回调，添加到列表，并发送自己的信息
+     * @param bean
+     */
 
     @Override
     public void onRequestCallBack(final SocketBean bean) {
 
-        if (!mSocketBeanList.contains(bean)) {
+        if (!App.getmSocketBeanList().contains(bean)) {
             Intent intent = new Intent(MainActivity.this, SendIntentService.class);
             SendIntentService.setSendListener(MainActivity.this);
             intent.setAction(Constant.ACTION_SEND_MSG);
@@ -99,7 +109,7 @@ public class MainActivity extends AppCompatActivity
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mSocketBeanList.add(bean);
+                    App.getmSocketBeanList().add(bean);
                     mAdapter.notifyDataSetChanged();
                 }
             });
@@ -108,27 +118,42 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * 接收成功后的回调，如果是连接则显示消息，如果是断开连接则删除对应项
+     * @param bean
+     */
+
     @Override
     public void onReceiveCallBack(final SocketBean bean) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                int size = mSocketBeanList.size();
-                for (int i=0;i<size;i++){
-                    if (bean.equals(mSocketBeanList.get(i))){
-                        mSocketBeanList.get(i).setMessage(bean.getMessage());
-                        mAdapter.notifyItemChanged(i);
-                    }
-                }
+               if (bean.getStatus()==Constant.CONNECT){
+                   int size = App.getmSocketBeanList().size();
+                   for (int i=0;i<size;i++){
+                       if (bean.equals(App.getmSocketBeanList().get(i))){
+                           App.getmSocketBeanList().get(i).setMessage(bean.getMessage());
+                           mAdapter.notifyItemChanged(i);
+                       }
+                   }
+               }else if (bean.getStatus()==Constant.DISCONNECT){
+
+                   mAdapter.notifyDataSetChanged();
+               }
             }
         });
     }
+
+
 
     @Override
     public void onSendSuccess(String type) {
 
     }
 
+    /**
+     * 建立连接成功后的回调
+     */
     @Override
     public void onSendFail() {
         runOnUiThread(new Runnable() {
@@ -152,6 +177,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.menu_open:
                 startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                 break;
+            //搜索对等方，先判断是否有网
             case R.id.menu_search:
                 if (NetWorkUtil.isNetworkConnected(this) && NetWorkUtil.isWifiConnected(this)) {
                     if (LoadingDialogUtil.createLoadingDialog(MainActivity.this, "正在搜索对等方！")) {

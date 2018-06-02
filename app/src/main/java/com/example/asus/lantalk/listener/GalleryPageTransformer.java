@@ -4,7 +4,7 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 
 /**
- * Created by asus on 18-5-23.
+ * ViewPager 的 PageTransformer
  */
 
 public class GalleryPageTransformer implements ViewPager.PageTransformer{

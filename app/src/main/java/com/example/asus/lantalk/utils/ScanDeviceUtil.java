@@ -23,9 +23,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static com.example.asus.lantalk.constant.Constant.ACTION_SEND_MSG;
+
 import static com.example.asus.lantalk.constant.Constant.SERVER_MSG_PORT;
-import static com.example.asus.lantalk.constant.Constant.sLOCAL_HOST_IP;
+
 
 /**
  * Created by asus on 18-5-8.
@@ -88,6 +88,8 @@ public class ScanDeviceUtil {
 
                 @Override
                 public void run() {
+
+
                     // TODO Auto-generated method stub
                     String ping = mPing + mLocAddress
                             + lastAddress;
@@ -104,6 +106,7 @@ public class ScanDeviceUtil {
                             Log.d(TAG, "扫描成功,Ip地址为：" + currnetIp);
 
                             mIpList.add(currnetIp);
+                            //扫描到后直接连接
                             connect(currnetIp);
                         } else {
                             // 扫描失败
@@ -129,6 +132,7 @@ public class ScanDeviceUtil {
             try {
                 if (mExecutor.isTerminated()) {// 扫描结束,开始验证
                     Log.d(TAG, "扫描结束,总共成功扫描到" + mIpList.size() + "个设备.");
+                    Log.e(TAG, "scan: "+mIpList.toString() );
 
                     break;
                 }

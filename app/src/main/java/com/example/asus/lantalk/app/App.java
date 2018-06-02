@@ -1,22 +1,30 @@
 package com.example.asus.lantalk.app;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.example.asus.lantalk.constant.Constant;
 import com.example.asus.lantalk.entity.SocketBean;
 import com.example.asus.lantalk.service.ReceiveService;
+import com.example.asus.lantalk.service.SendIntentService;
+import com.example.asus.lantalk.ui.MainActivity;
+import com.example.asus.lantalk.utils.TimeUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.example.asus.lantalk.constant.Constant.SEND_PEER_BEAN;
 
 
 /**
@@ -24,13 +32,15 @@ import java.util.Map;
  */
 
 public class App extends Application {
-    public static String sName;
-    public static String sIP;
-    public static int sProfilePicture;
+    public static String sName;//名字
+    public static String sIP;//本地ip
+    public static int sProfilePicture;//头像的标识
     private static  Context sContext;
     private static File sCacheDir;
-    private static Map<String,List<SocketBean>> sHistoryMap;
-
+    private static Map<String,List<SocketBean>> sHistoryMap;//消息的存储列表
+    private int mFinalCount;
+    private static final String TAG = "App";
+    private static List<SocketBean> mSocketBeanList;
 
     @Override
     public void onCreate() {
@@ -42,7 +52,43 @@ public class App extends Application {
          sContext = getApplicationContext();
         sProfilePicture =0;
         sHistoryMap = new HashMap<>();
+        mSocketBeanList = new ArrayList<>();
 
+
+
+
+
+    }
+
+
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+
+        for (int i=0;i<mSocketBeanList.size();i++){
+            SocketBean socketBean = new SocketBean();
+            Intent intent = new Intent(this, SendIntentService.class);
+            intent.setAction(Constant.ACTION_SEND_MSG);
+            socketBean.setStatus(Constant.DISCONNECT);
+            socketBean.setTime(TimeUtil.getCurrentTime());
+            socketBean.setSendIP(App.sIP);
+            socketBean.setSendName(App.sName);
+            socketBean.setProfilePicture(App.sProfilePicture);
+            socketBean.setReceiveIP(mSocketBeanList.get(i).getSendIP());
+            intent.putExtra(SEND_PEER_BEAN, socketBean);
+            startService(intent);
+        }
+        mSocketBeanList.clear();
+
+    }
+
+    public static List<SocketBean> getmSocketBeanList() {
+        return mSocketBeanList;
+    }
+
+    public static void setmSocketBeanList(List<SocketBean> mSocketBeanList) {
+        App.mSocketBeanList = mSocketBeanList;
     }
 
     public static Map<String, List<SocketBean>> getsHistoryMap() {
@@ -56,4 +102,6 @@ public class App extends Application {
     public static Context getsContext() {
         return sContext;
     }
+
+
 }

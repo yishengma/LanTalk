@@ -21,9 +21,8 @@ import static com.example.asus.lantalk.constant.Constant.sEMPTY;
 import static com.example.asus.lantalk.constant.Constant.sITEM;
 
 /**
- * Created by asus on 18-5-9.
+ *  对等方列表的 Adapter
  */
-
 public class PeerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<SocketBean> mSocketBeans;
     private static final String TAG = "PeerAdapter";
@@ -45,9 +44,11 @@ public class PeerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        //空白界面
         if (viewType==sEMPTY){
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_empty, parent, false);
             return new EmptyViewHolder(view);
+            //有数据时的提示
         }else if (viewType==sITEM){
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_peer, parent, false);
             return new ViewHolder(view);

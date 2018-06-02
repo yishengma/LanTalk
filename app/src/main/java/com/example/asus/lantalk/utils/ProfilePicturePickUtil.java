@@ -3,7 +3,7 @@ package com.example.asus.lantalk.utils;
 import com.example.asus.lantalk.R;
 
 /**
- * Created by asus on 18-5-23.
+ * 图片的选择
  */
 
 public class ProfilePicturePickUtil {

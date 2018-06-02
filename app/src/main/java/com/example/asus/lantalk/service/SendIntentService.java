@@ -32,11 +32,9 @@ import static com.example.asus.lantalk.constant.Constant.SEND_PEER_BEAN;
 import static com.example.asus.lantalk.constant.Constant.SERVER_FILE_PORT;
 import static com.example.asus.lantalk.constant.Constant.SERVER_MSG_PORT;
 
-
 /**
- * Created by asus on 18-5-9.
+ * 发送消息的服务
  */
-
 public class SendIntentService extends IntentService {
     private static final String TAG = "SendIntentService";
     private static OnSendListener mSendListener;

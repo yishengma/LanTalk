@@ -32,7 +32,7 @@ import static com.example.asus.lantalk.constant.Constant.SERVER_MSG_PORT;
 
 
 /**
- * Created by asus on 18-5-12.
+ * 接收消息的服务
  */
 
 public class ReceiveService extends Service {
@@ -174,19 +174,56 @@ public class ReceiveService extends Service {
         if (mConnectListener != null && socketBeen.getStatus() == Constant.REQUEST) {
             mConnectListener.onRequestCallBack(socketBeen);
             App.getsHistoryMap().put(socketBeen.getSendIP(),new ArrayList<SocketBean>());
+
             //收到消息
         } else if (mReceiveListener != null && socketBeen.getStatus() == Constant.CONNECT) {
             socketBeen.setType(Constant.PEERMSG);
             mReceiveListener.onReceiveCallBack(socketBeen);
-            //保存记录
             for (String ip:App.getsHistoryMap().keySet()) {
                 if (ip.equals(socketBeen.getSendIP())){
+
                     App.getsHistoryMap().get(ip).add(socketBeen);
                 }
             }
 
+         //断开消息
+        }else if (mReceiveListener!=null&&socketBeen.getStatus()==Constant.DISCONNECT){
+            int i=0;
+            for (;i<App.getmSocketBeanList().size();i++ ){
+                if (App.getmSocketBeanList().get(i).getSendIP().equals(socketBeen.getSendIP())){
+                    break;
+                }
+            }
+            if (App.getmSocketBeanList().size()!=0){
+                App.getmSocketBeanList().remove(i);
+            }
+            mReceiveListener.onReceiveCallBack(socketBeen);
         }
+
+
+
+
+        //建立连接
         if (mConnectListener!=null&& socketBeen.getStatus() == Constant.CONNECT){
+            //保存记录
+            for (String ip:App.getsHistoryMap().keySet()) {
+
+                if (ip.equals(socketBeen.getSendIP())){
+                    App.getsHistoryMap().get(ip).add(socketBeen);
+                }
+            }
+            mConnectListener.onReceiveCallBack(socketBeen);
+        //断开消息
+        }else if (mConnectListener!=null&&socketBeen.getStatus()==Constant.DISCONNECT){
+            int i=0;
+            for (;i<App.getmSocketBeanList().size();i++ ){
+                if (App.getmSocketBeanList().get(i).getSendIP().equals(socketBeen.getSendIP())){
+                    break;
+                }
+            }
+            if (App.getmSocketBeanList().size()!=0){
+                App.getmSocketBeanList().remove(i);
+            }
             mConnectListener.onReceiveCallBack(socketBeen);
         }
     }

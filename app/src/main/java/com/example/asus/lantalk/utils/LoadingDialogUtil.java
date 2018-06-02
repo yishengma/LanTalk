@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.example.asus.lantalk.R;
 
 /**
- * Created by asus on 18-5-11.
+ * 加载框
  */
 
 public class LoadingDialogUtil {
