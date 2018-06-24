@@ -71,6 +71,8 @@ public class TalkActivity extends AppCompatActivity implements
     private String mPhotoPath;//背景照的路径
     private static final String TAG = "TalkActivity";
     private String mPeerIP;
+    private String mPeerName;
+    private int mPeerPicture;
 
 
 
@@ -97,12 +99,20 @@ public class TalkActivity extends AppCompatActivity implements
 
     private void initView() {
         mName = findViewById(R.id.tv_name);
-        mName.setText(getIntent().getStringExtra(SEND_PEER_NAME));
+        mPeerName = getIntent().getStringExtra(SEND_PEER_NAME);
+        mName.setText(mPeerName);
         mPeerIP = getIntent().getStringExtra(SEND_PEER_BEAN);
+        mPeerPicture = getIntent().getIntExtra(SNED_PEER_PICTURE,0);
         mRvMsgContent = findViewById(R.id.rv_msg_content);
         mEditText = findViewById(R.id.et_input);
         mSendButton = findViewById(R.id.btn_send);
         mBeanList = new ArrayList<>();
+
+        for(SocketBean s:App.getsHistoryMap().get(mPeerIP)){
+            s.setSendName(mPeerName);
+            s.setImageStatus(Constant.sSUCCESS);
+            s.setProfilePicture(mPeerPicture);
+        }
         mBeanList.addAll(App.getsHistoryMap().get(mPeerIP));
         mAdapter = new MessageAdapter(mBeanList);
 
@@ -134,7 +144,6 @@ public class TalkActivity extends AppCompatActivity implements
                 if (!TextUtils.isEmpty(mEditText.getText().toString())) {
                     Intent intent = new Intent(TalkActivity.this, SendIntentService.class);
                     mSocketBean = new SocketBean();
-
                     mSocketBean.setReceiveIP(mPeerIP);
                     mSocketBean.setMessage(mEditText.getText().toString());
                     mSocketBean.setSendIP(App.sIP);
@@ -145,7 +154,6 @@ public class TalkActivity extends AppCompatActivity implements
                     mSocketBean.setType(Constant.MINEMSG);
                     mSocketBean.setProfilePicture(App.sProfilePicture);
                     intent.putExtra(SEND_PEER_BEAN, mSocketBean);
-
                     startService(intent);
 
                 }
@@ -193,6 +201,8 @@ public class TalkActivity extends AppCompatActivity implements
                         Uri uri = data.getData();
                         mPhotoPath = getmImageFilePath(uri, null);
                     }
+
+
                     Intent intent = new Intent(TalkActivity.this, SendIntentService.class);
                     mSocketBean = new SocketBean();
                     mSocketBean.setReceiveIP(mPeerIP);
@@ -203,7 +213,12 @@ public class TalkActivity extends AppCompatActivity implements
                     mSocketBean.setProfilePicture(App.sProfilePicture);
                     mSocketBean.setStatus(CONNECT);
                     mSocketBean.setType(MINEFILE);
+                    mSocketBean.setImageId(App.sImageId++);
+                    mSocketBean.setImageStatus(Constant.sSENDING);
                     mSocketBean.setProfilePicture(App.sProfilePicture);
+                    mBeanList.add(mSocketBean);
+                    mAdapter.notifyDataSetChanged();
+                    mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
                     intent.setAction(Constant.ACTION_SEND_FILE);
                     intent.putExtra(SEND_PEER_BEAN, mSocketBean);
                     startService(intent);
@@ -221,15 +236,16 @@ public class TalkActivity extends AppCompatActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (bean.getStatus()==Constant.CONNECT){
-                    bean.setSendName(mName.getText().toString());
+                if (bean.getStatus()==Constant.CONNECT) {
+                    bean.setSendName(mPeerName);
+                    bean.setProfilePicture(mPeerPicture);
                     mBeanList.add(bean);
                     mAdapter.notifyDataSetChanged();
                     mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
-
-                }else if (bean.getStatus()==Constant.DISCONNECT){
-                     showDialog();
                 }
+//                }else if (bean.getStatus()==Constant.DISCONNECT){
+//                     showDialog();
+//                }
             }
         });
     }
@@ -239,7 +255,7 @@ public class TalkActivity extends AppCompatActivity implements
      * @param type
      */
     @Override
-    public void onSendSuccess(String type) {
+    public void onSendSuccess(String type, final int imageId) {
         if (type.equals(ACTION_SEND_MSG)) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -264,10 +280,12 @@ public class TalkActivity extends AppCompatActivity implements
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mSocketBean.setType(MINEFILE);
-                    mBeanList.add(mSocketBean);
+                    for (SocketBean socketBean:mBeanList){
+                        if (socketBean.getImageId()==imageId){
+                            socketBean.setImageStatus(Constant.sSUCCESS);
+                        }
+                    }
                     mAdapter.notifyDataSetChanged();
-                    mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
                     //保存记录 注意这里的ip
                     for (String ip:App.getsHistoryMap().keySet()) {
                         if (ip.equals(mSocketBean.getReceiveIP())){
@@ -283,11 +301,19 @@ public class TalkActivity extends AppCompatActivity implements
      * 发送失败后的回调
      */
     @Override
-    public void onSendFail() {
+    public void onSendFail(final String type, final int id) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(TalkActivity.this, "发送失败", Toast.LENGTH_SHORT).show();
+                if (type.equals(Constant.ACTION_SEND_FILE)){
+                    for (SocketBean socketBean:mBeanList){
+                        if (socketBean.getImageId()==id){
+                            socketBean.setImageStatus(Constant.sERROR);
+                        }
+                    }
+                    mAdapter.notifyDataSetChanged();
+                }
             }
         });
     }
@@ -369,5 +395,6 @@ public class TalkActivity extends AppCompatActivity implements
         super.onDestroy();
         //需要将接口置为 null ,否则 Activity 可能不在Top
         ReceiveService.setReceiveListener(null);
+
     }
 }

@@ -44,6 +44,7 @@
         </LinearLayout>
 
         <ImageView
+            android:src="@drawable/iv_head_1"
             android:id="@+id/iv_photo"
             android:layout_width="@dimen/dimen_talk_picture_width"
             android:layout_height="@dimen/dimen_talk_picture_height"
@@ -52,6 +53,28 @@
             android:layout_toStartOf="@+id/ll_talk"
             android:minHeight="@dimen/dimen_talk_picture_minh"
             android:scaleType="centerCrop" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_toLeftOf="@+id/iv_photo"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_width="@dimen/dimen_bar_size"
+            android:layout_height="@dimen/dimen_bar_size"
+            android:layout_gravity="center_horizontal"
+            android:indeterminateBehavior="repeat"
+            android:indeterminateDrawable="@drawable/dialog_loading"
+            android:indeterminateOnly="true" />
+        <ImageView
+            android:visibility="invisible"
+            android:id="@+id/progressError"
+            android:layout_toLeftOf="@+id/iv_photo"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_width="@dimen/dimen_bar_size"
+            android:layout_height="@dimen/dimen_bar_size"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/iv_error"
+             />
     </RelativeLayout>
 
 </LinearLayout>

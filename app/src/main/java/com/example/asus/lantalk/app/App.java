@@ -38,7 +38,7 @@ public class App extends Application {
     private static  Context sContext;
     private static File sCacheDir;
     private static Map<String,List<SocketBean>> sHistoryMap;//消息的存储列表
-    private int mFinalCount;
+    public static int sImageId;
     private static final String TAG = "App";
     private static List<SocketBean> mSocketBeanList;
 
@@ -53,7 +53,7 @@ public class App extends Application {
         sProfilePicture =0;
         sHistoryMap = new HashMap<>();
         mSocketBeanList = new ArrayList<>();
-
+        sImageId = 0;
 
 
 
@@ -66,20 +66,20 @@ public class App extends Application {
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
 
-        for (int i=0;i<mSocketBeanList.size();i++){
-            SocketBean socketBean = new SocketBean();
-            Intent intent = new Intent(this, SendIntentService.class);
-            intent.setAction(Constant.ACTION_SEND_MSG);
-            socketBean.setStatus(Constant.DISCONNECT);
-            socketBean.setTime(TimeUtil.getCurrentTime());
-            socketBean.setSendIP(App.sIP);
-            socketBean.setSendName(App.sName);
-            socketBean.setProfilePicture(App.sProfilePicture);
-            socketBean.setReceiveIP(mSocketBeanList.get(i).getSendIP());
-            intent.putExtra(SEND_PEER_BEAN, socketBean);
-            startService(intent);
-        }
-        mSocketBeanList.clear();
+//        for (int i=0;i<mSocketBeanList.size();i++){
+//            SocketBean socketBean = new SocketBean();
+//            Intent intent = new Intent(this, SendIntentService.class);
+//            intent.setAction(Constant.ACTION_SEND_MSG);
+//            socketBean.setStatus(Constant.DISCONNECT);
+//            socketBean.setTime(TimeUtil.getCurrentTime());
+//            socketBean.setSendIP(App.sIP);
+//            socketBean.setSendName(App.sName);
+//            socketBean.setProfilePicture(App.sProfilePicture);
+//            socketBean.setReceiveIP(mSocketBeanList.get(i).getSendIP());
+//            intent.putExtra(SEND_PEER_BEAN, socketBean);
+//            startService(intent);
+//        }
+//        mSocketBeanList.clear();
 
     }
 

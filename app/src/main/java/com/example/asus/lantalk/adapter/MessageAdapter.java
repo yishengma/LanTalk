@@ -3,10 +3,12 @@ package com.example.asus.lantalk.adapter;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -27,6 +29,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<SocketBean> mBeans;
     private OnClickListener mOnClickListener;
+    private static final String TAG = "MessageAdapter";
 
     public void setOnClickListener(OnClickListener onClickListener) {
         mOnClickListener = onClickListener;
@@ -67,43 +70,29 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         final SocketBean bean = mBeans.get(position);
         //我的消息
         if (holder instanceof MessageMine) {
-            ((MessageMine)holder).mNameTextView.setText(bean.getSendName());
-            ((MessageMine)holder).mMsgTextView.setText(bean.getMessage());
-            //加载头像
-            Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((MessageMine)holder).mCircleImageView);
+            setMessageMineViewHolder(holder,bean);
         //对等方的消息
         }else if (holder instanceof  MessagePeer){
-            ((MessagePeer)holder).mNameTextView.setText(bean.getSendName());
-            ((MessagePeer)holder).mMsgTextView.setText(bean.getMessage());
-            Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((MessagePeer)holder).mCircleImageView);
+            setMessagePeerViewHolder(holder,bean);
           //我的文件
         }else if (holder instanceof FileMine){
-            ((FileMine)holder).mNameTextView.setText(bean.getSendName());
-            Glide.with(App.getsContext()).load(bean.getFilePath()).into(((FileMine)holder).mFileImageView);
-            ((FileMine)holder).mFileImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                   if (mOnClickListener!=null){
-                       mOnClickListener.OnClick(bean.getFilePath());
-                   }
+              //正在发送
+             if (bean.getImageStatus()==Constant.sSENDING){
+                 setFileMineViewHolder(holder,bean);
+              //发送成功
+             }else if (bean.getImageStatus()==Constant.sSUCCESS){
+                 setFileMineViewHolder(holder,bean);
+                 ((FileMine)holder).mErrorImage.setVisibility(View.INVISIBLE);
+                 ((FileMine)holder).mBar.setVisibility(View.INVISIBLE);
+                 //发送失败
+             }else if (bean.getImageStatus()==Constant.sERROR){
+                 ((FileMine)holder).mErrorImage.setVisibility(View.VISIBLE);
+                 ((FileMine)holder).mBar.setVisibility(View.INVISIBLE);
+             }
 
-                }
-            });
-            Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((FileMine)holder).mCircleImageView);
             //对等方的文件
         }else if (holder instanceof FilePeer){
-            ((FilePeer)holder).mNameTextView.setText(bean.getSendName());
-            Glide.with(App.getsContext()).load(bean.getFilePath()).into(((FilePeer)holder).mFileImageView);
-            ((FilePeer)holder).mFileImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                  if (mOnClickListener!=null){
-                      mOnClickListener.OnClick(bean.getFilePath());
-                  }
-                }
-            });
-            Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((FilePeer)holder).mCircleImageView);
-
+           setFilePeerViewHolder(holder,bean);
         }
     }
 
@@ -116,6 +105,54 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public int getItemViewType(int position) {
         return mBeans.get(position).getType();
     }
+
+
+    public void setMessageMineViewHolder(RecyclerView.ViewHolder holder,final SocketBean bean){
+        ((MessageMine)holder).mNameTextView.setText(bean.getSendName());
+        ((MessageMine)holder).mMsgTextView.setText(bean.getMessage());
+        //加载头像
+        Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((MessageMine)holder).mCircleImageView);
+    }
+    public void setMessagePeerViewHolder(RecyclerView.ViewHolder holder,final SocketBean bean){
+        ((MessagePeer)holder).mNameTextView.setText(bean.getSendName());
+        ((MessagePeer)holder).mMsgTextView.setText(bean.getMessage());
+        Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((MessagePeer)holder).mCircleImageView);
+    }
+    public void setFileMineViewHolder(RecyclerView.ViewHolder holder,final SocketBean bean){
+        ((FileMine)holder).mNameTextView.setText(bean.getSendName());
+        Glide.with(App.getsContext()).load(bean.getFilePath()).into(((FileMine)holder).mFileImageView);
+        ((FileMine)holder).mFileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mOnClickListener!=null){
+                    mOnClickListener.OnClick(bean.getFilePath());
+                }
+
+            }
+        });
+        Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((FileMine)holder).mCircleImageView);
+    }
+    public void setFilePeerViewHolder(RecyclerView.ViewHolder holder,final SocketBean bean){
+        ((FilePeer)holder).mNameTextView.setText(bean.getSendName());
+        Log.e(TAG, "onBindViewHolder: "+bean.getSendName() );
+        Glide.with(App.getsContext()).load(bean.getFilePath()).into(((FilePeer)holder).mFileImageView);
+        ((FilePeer)holder).mFileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mOnClickListener!=null){
+                    mOnClickListener.OnClick(bean.getFilePath());
+                }
+            }
+        });
+        Glide.with(App.getsContext()).load(ProfilePicturePickUtil.getImageDrawable(bean.getProfilePicture())).into(((FilePeer)holder).mCircleImageView);
+
+    }
+
+
+
+
+
+
 
     class MessageMine extends RecyclerView.ViewHolder{
 
@@ -151,11 +188,15 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         ImageView mFileImageView;
         TextView mNameTextView;
         CircleImageView mCircleImageView;
+        ProgressBar mBar;
+        ImageView mErrorImage;
         public FileMine(View itemView) {
             super(itemView);
             mFileImageView = itemView.findViewById(R.id.iv_photo);
             mNameTextView = itemView.findViewById(R.id.tv_mine_name);
             mCircleImageView = itemView.findViewById(R.id.iv_mine_picture);
+            mBar = itemView.findViewById(R.id.progressBar);
+            mErrorImage = itemView.findViewById(R.id.progressError);
         }
     }
 

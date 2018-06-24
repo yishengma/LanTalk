@@ -37,10 +37,18 @@ public class Constant {
 
 
     public static final int sCHOOSEALBUM = 0;
+    public static final int sOPENWIFI = 1;
 
     //RecyclerView 的数据标识
     public static final int sITEM = 0;
     public static final int sEMPTY = 1;
+
+
+    //图片发送的状态
+
+    public static final int sSENDING  = 0;
+    public static final int sSUCCESS = 1;
+    public static final int sERROR = 2;
 
 
     public static final int[] PROFILEPHOTO = {R.drawable.iv_head_1, R.drawable.iv_head_2, R.drawable.iv_head_3,

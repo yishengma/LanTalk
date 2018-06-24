@@ -21,6 +21,7 @@
     <color name="color_white_background">#ffffff</color>
 
     <color name="color_blue_login">#2c3a57</color>
+    <color name="color_blue_send">#1c2841</color>
 
     <color name="color_transparent_black">#98000000</color>
     <color name="color_divider">#baedecec</color>

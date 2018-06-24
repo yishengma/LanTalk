@@ -25,6 +25,7 @@ import com.example.asus.lantalk.service.ScanService;
 import com.example.asus.lantalk.service.SendIntentService;
 import com.example.asus.lantalk.utils.LoadingDialogUtil;
 import com.example.asus.lantalk.utils.NetWorkUtil;
+import com.example.asus.lantalk.utils.ScanDeviceUtil;
 import com.example.asus.lantalk.utils.TimeUtil;
 
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ import java.util.List;
 
 import static com.example.asus.lantalk.constant.Constant.SEND_PEER_BEAN;
 import static com.example.asus.lantalk.constant.Constant.SERVICE_RECEIVER;
+import static com.example.asus.lantalk.constant.Constant.sCHOOSEALBUM;
+import static com.example.asus.lantalk.constant.Constant.sOPENWIFI;
 
 public class MainActivity extends AppCompatActivity
         implements SendIntentService.OnSendListener,
@@ -55,6 +58,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
+
         if (mAdapter!=null){
             mAdapter.notifyDataSetChanged();
         }
@@ -109,6 +114,7 @@ public class MainActivity extends AppCompatActivity
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    Log.e(TAG, "run: "+bean.getProfilePicture());
                     App.getmSocketBeanList().add(bean);
                     mAdapter.notifyDataSetChanged();
                 }
@@ -128,6 +134,7 @@ public class MainActivity extends AppCompatActivity
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
                if (bean.getStatus()==Constant.CONNECT){
                    int size = App.getmSocketBeanList().size();
                    for (int i=0;i<size;i++){
@@ -136,9 +143,6 @@ public class MainActivity extends AppCompatActivity
                            mAdapter.notifyItemChanged(i);
                        }
                    }
-               }else if (bean.getStatus()==Constant.DISCONNECT){
-
-                   mAdapter.notifyDataSetChanged();
                }
             }
         });
@@ -147,7 +151,7 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override
-    public void onSendSuccess(String type) {
+    public void onSendSuccess(String type,int imageId) {
 
     }
 
@@ -155,7 +159,7 @@ public class MainActivity extends AppCompatActivity
      * 建立连接成功后的回调
      */
     @Override
-    public void onSendFail() {
+    public void onSendFail(String type,int id) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -175,7 +179,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_open:
-                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS),sOPENWIFI);
                 break;
             //搜索对等方，先判断是否有网
             case R.id.menu_search:
@@ -191,6 +195,18 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case sOPENWIFI:
+                if (resultCode==RESULT_OK){
+                    App.sIP = ScanDeviceUtil.getLocAddress();
+
+                }
+                break;
+        }
     }
 
     @Override

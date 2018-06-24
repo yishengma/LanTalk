@@ -20,10 +20,12 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.StreamCorruptedException;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import static com.example.asus.lantalk.constant.Constant.CONNECT;
 import static com.example.asus.lantalk.constant.Constant.PEERFILE;
 
 
@@ -173,59 +175,60 @@ public class ReceiveService extends Service {
         //收到链接请求
         if (mConnectListener != null && socketBeen.getStatus() == Constant.REQUEST) {
             mConnectListener.onRequestCallBack(socketBeen);
+
             App.getsHistoryMap().put(socketBeen.getSendIP(),new ArrayList<SocketBean>());
 
             //收到消息
-        } else if (mReceiveListener != null && socketBeen.getStatus() == Constant.CONNECT) {
-            socketBeen.setType(Constant.PEERMSG);
-            mReceiveListener.onReceiveCallBack(socketBeen);
+        } else {
             for (String ip:App.getsHistoryMap().keySet()) {
                 if (ip.equals(socketBeen.getSendIP())){
-
                     App.getsHistoryMap().get(ip).add(socketBeen);
+
                 }
             }
 
-         //断开消息
-        }else if (mReceiveListener!=null&&socketBeen.getStatus()==Constant.DISCONNECT){
-            int i=0;
-            for (;i<App.getmSocketBeanList().size();i++ ){
-                if (App.getmSocketBeanList().get(i).getSendIP().equals(socketBeen.getSendIP())){
-                    break;
-                }
+            if (mReceiveListener != null && socketBeen.getStatus() == Constant.CONNECT) {
+                socketBeen.setType(Constant.PEERMSG);
+                mReceiveListener.onReceiveCallBack(socketBeen);
             }
-            if (App.getmSocketBeanList().size()!=0){
-                App.getmSocketBeanList().remove(i);
+
+            //建立连接
+            if (mConnectListener!=null&& socketBeen.getStatus() == Constant.CONNECT) {
+                mConnectListener.onReceiveCallBack(socketBeen);
             }
-            mReceiveListener.onReceiveCallBack(socketBeen);
         }
 
+                //断开消息
+//        }else if (mReceiveListener!=null&&socketBeen.getStatus()==Constant.DISCONNECT){
+//            int i=0;
+//            for (;i<App.getmSocketBeanList().size();i++ ){
+//                if (App.getmSocketBeanList().get(i).getSendIP().equals(socketBeen.getSendIP())){
+//                    break;
+//                }
+//            }
+//            if (App.getmSocketBeanList().size()!=0){
+//                App.getmSocketBeanList().remove(i);
+//            }
+//            mReceiveListener.onReceiveCallBack(socketBeen);
 
 
 
-        //建立连接
-        if (mConnectListener!=null&& socketBeen.getStatus() == Constant.CONNECT){
-            //保存记录
-            for (String ip:App.getsHistoryMap().keySet()) {
 
-                if (ip.equals(socketBeen.getSendIP())){
-                    App.getsHistoryMap().get(ip).add(socketBeen);
-                }
-            }
-            mConnectListener.onReceiveCallBack(socketBeen);
+
+
         //断开消息
-        }else if (mConnectListener!=null&&socketBeen.getStatus()==Constant.DISCONNECT){
-            int i=0;
-            for (;i<App.getmSocketBeanList().size();i++ ){
-                if (App.getmSocketBeanList().get(i).getSendIP().equals(socketBeen.getSendIP())){
-                    break;
-                }
-            }
-            if (App.getmSocketBeanList().size()!=0){
-                App.getmSocketBeanList().remove(i);
-            }
-            mConnectListener.onReceiveCallBack(socketBeen);
-        }
+//        }else if (mConnectListener!=null&&socketBeen.getStatus()==Constant.DISCONNECT){
+//            int i=0;
+//            for (;i<App.getmSocketBeanList().size();i++ ){
+//                if (App.getmSocketBeanList().get(i).getSendIP().equals(socketBeen.getSendIP())){
+//                    break;
+//                }
+//            }
+//            if (App.getmSocketBeanList().size()!=0){
+//                App.getmSocketBeanList().remove(i);
+//            }
+//            mConnectListener.onReceiveCallBack(socketBeen);
+//        }
     }
 
     public void receiveFile(Socket socket) throws IOException {
@@ -248,6 +251,8 @@ public class ReceiveService extends Service {
         socketBean.setFile(true);
         socketBean.setType(PEERFILE);
         socketBean.setSendIP((""+socket.getInetAddress()).replace("/",""));
+        socketBean.setMessage("[图片]");
+        socketBean.setStatus(CONNECT);
         //保存记录
         for (String ip:App.getsHistoryMap().keySet()) {
             if (ip.equals(socketBean.getSendIP())){
@@ -255,11 +260,12 @@ public class ReceiveService extends Service {
             }
         }
         if (mReceiveListener != null) {
-
+            Log.e(TAG, "receiveFile:mReceiveListener ");
             mReceiveListener.onReceiveCallBack(socketBean);
         }
         if (mConnectListener!=null){
-            socketBean.setMessage("[图片]");
+            Log.e(TAG, "receiveFile:mConnectListener ");
+
             mConnectListener.onReceiveCallBack(socketBean);
         }
 

@@ -37,6 +37,7 @@
     <dimen name="dimen_loading_padding_bottom">10dp</dimen>
     <dimen name="dimen_loading_padding_top">10dp</dimen>
     <dimen name="dimen_progressbar_size">35dp</dimen>
+    <dimen name="dimen_bar_size">15dp</dimen>
     <dimen name="dimen_loading_text">15sp</dimen>
     <dimen name="dimen_loading_text_margin">15dp</dimen>
 

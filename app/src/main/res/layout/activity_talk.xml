@@ -111,7 +111,7 @@
             android:layout_height="32dp"
             android:layout_marginBottom="10dp"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/btn_send_background"
+            android:background="@drawable/btn_send_selector"
             android:text="@string/send"
             android:textSize="13sp"
             android:textColor="@color/color_white_text"

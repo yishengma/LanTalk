@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.asus.lantalk.app.App;
+import com.example.asus.lantalk.constant.Constant;
 import com.example.asus.lantalk.entity.SocketBean;
 import com.example.asus.lantalk.utils.ScanDeviceUtil;
 
@@ -44,9 +45,9 @@ public class SendIntentService extends IntentService {
     }
 
     public interface OnSendListener {
-        void onSendSuccess(String type);
+        void onSendSuccess(String type,int id);
 
-        void onSendFail();
+        void onSendFail(String type,int id);
     }
 
     public SendIntentService() {
@@ -63,10 +64,12 @@ public class SendIntentService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         if (intent.getAction().equals(ACTION_SEND_FILE)) {
             SocketBean socketBean = (SocketBean) intent.getSerializableExtra(SEND_PEER_BEAN);
+            socketBean.setType(Constant.PEERFILE);
             sendFile(socketBean);
 
         } else if (intent.getAction().equals(ACTION_SEND_MSG)) {
             SocketBean socketBean = (SocketBean) intent.getSerializableExtra(SEND_PEER_BEAN);
+            socketBean.setType(Constant.PEERMSG);
             send(socketBean);
         }
 
@@ -86,13 +89,13 @@ public class SendIntentService extends IntentService {
                     os.writeObject(socketBean);
                     os.flush();
                     if (mSendListener != null) {
-                        mSendListener.onSendSuccess(ACTION_SEND_MSG);
+                        mSendListener.onSendSuccess(ACTION_SEND_MSG,0);
                     }
 
                 } catch (IOException e) {
                     e.printStackTrace();
                     if (mSendListener != null) {
-                        mSendListener.onSendFail();
+                        mSendListener.onSendFail(ACTION_SEND_MSG,0);
                     }
                 } finally {
                     if (socket != null) {
@@ -148,12 +151,12 @@ public class SendIntentService extends IntentService {
 
 
                         if (mSendListener != null) {
-                            mSendListener.onSendSuccess(ACTION_SEND_FILE);
+                            mSendListener.onSendSuccess(ACTION_SEND_FILE,socketBean.getImageId());
                         }
                     }
                     } catch(IOException e){
                         if (mSendListener != null) {
-                            mSendListener.onSendFail();
+                            mSendListener.onSendFail(ACTION_SEND_FILE,socketBean.getImageId());
                         }
                     } finally{
                         if (socket != null) {

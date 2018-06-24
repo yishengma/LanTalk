@@ -20,6 +20,9 @@ public class SocketBean implements Serializable{
     private String mFilePath;
     private  boolean mIsFile ;
 
+    private int mImageStatus;
+    private int mImageId;
+
     @Override
     public boolean equals(Object obj) {
         return getSendIP().equals(((SocketBean)obj).getSendIP());
@@ -112,5 +115,21 @@ public class SocketBean implements Serializable{
 
     public void setStatus(int status) {
         mStatus = status;
+    }
+
+    public int getImageStatus() {
+        return mImageStatus;
+    }
+
+    public void setImageStatus(int imageStatus) {
+        mImageStatus = imageStatus;
+    }
+
+    public int getImageId() {
+        return mImageId;
+    }
+
+    public void setImageId(int imageId) {
+        mImageId = imageId;
     }
 }
