@@ -25,10 +25,10 @@
 
         </activity>
 
-        <service android:name=".service.ScanService" />
+        <!--<service android:name=".service.ScanService" />-->
         <service android:name=".service.SendIntentService" />
         <service android:name=".service.ReceiveService" />
-        <service android:name=".service.TestMultiService" />
+        <service android:name=".service.BroadcastService" />
 
         <activity
             android:name=".ui.TalkActivity"
@@ -39,9 +39,6 @@
             android:name=".ui.LoginActivity"
             android:theme="@style/LoginTheme"
             android:windowSoftInputMode="adjustPan">
-
-        </activity>
-        <activity android:name=".ui.TestMultiActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

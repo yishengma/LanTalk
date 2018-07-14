@@ -11,6 +11,7 @@ public class Constant {
     //端口号
     public static final int SERVER_MSG_PORT = 3333;
     public static final int SERVER_FILE_PORT = 4444;
+    public static final int SERVER_MULTI_PORT = 3344;
 
     //服务的通信传参
     public static final String ACTION_SEND_FILE = "com.example.android.wifidirect.SEND_FILE";
@@ -49,6 +50,11 @@ public class Constant {
     public static final int sSENDING  = 0;
     public static final int sSUCCESS = 1;
     public static final int sERROR = 2;
+
+    //TTL
+    public static final int sTTL = 255;
+
+
 
 
     public static final int[] PROFILEPHOTO = {R.drawable.iv_head_1, R.drawable.iv_head_2, R.drawable.iv_head_3,

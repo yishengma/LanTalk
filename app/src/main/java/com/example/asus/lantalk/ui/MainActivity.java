@@ -25,34 +25,29 @@ import com.example.asus.lantalk.service.ScanService;
 import com.example.asus.lantalk.service.SendIntentService;
 import com.example.asus.lantalk.utils.LoadingDialogUtil;
 import com.example.asus.lantalk.utils.NetWorkUtil;
-import com.example.asus.lantalk.utils.ScanDeviceUtil;
+import com.example.asus.lantalk.utils.NetIPUtil;
 import com.example.asus.lantalk.utils.TimeUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.example.asus.lantalk.constant.Constant.SEND_PEER_BEAN;
 import static com.example.asus.lantalk.constant.Constant.SERVICE_RECEIVER;
-import static com.example.asus.lantalk.constant.Constant.sCHOOSEALBUM;
 import static com.example.asus.lantalk.constant.Constant.sOPENWIFI;
 
 public class MainActivity extends AppCompatActivity
-        implements SendIntentService.OnSendListener,
+        implements
         ReceiveService.OnConnectListener {
     private Toolbar mToolbar;
 
     private PeerAdapter mAdapter;
     private RecyclerView mRecyclerView;
-    private ScanResultReceiver mScanResultReceiver;
+//    private ScanResultReceiver mScanResultReceiver;
     private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         initView();
-        initBroadcast();
+
     }
 
     @Override
@@ -63,6 +58,7 @@ public class MainActivity extends AppCompatActivity
         if (mAdapter!=null){
             mAdapter.notifyDataSetChanged();
         }
+//        initBroadcast();
     }
 
     private void initView() {
@@ -83,40 +79,28 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void initBroadcast() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(SERVICE_RECEIVER);
-        mScanResultReceiver = new ScanResultReceiver();
-        registerReceiver(mScanResultReceiver, intentFilter);
-    }
+//    private void initBroadcast() {
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(SERVICE_RECEIVER);
+//        mScanResultReceiver = new ScanResultReceiver();
+//        registerReceiver(mScanResultReceiver, intentFilter);
+//    }
 
     /**
-     * 请求成功后的回调，添加到列表，并发送自己的信息
+     * 收到新的局域网对等方成员，添加自己到列表
      * @param bean
      */
 
     @Override
-    public void onRequestCallBack(final SocketBean bean) {
+    public void onConnectCallBack(final SocketBean bean) {
 
         if (!App.getmSocketBeanList().contains(bean)) {
-            Intent intent = new Intent(MainActivity.this, SendIntentService.class);
-            SendIntentService.setSendListener(MainActivity.this);
-            intent.setAction(Constant.ACTION_SEND_MSG);
-            SocketBean socketBean = new SocketBean();
-            socketBean.setStatus(Constant.REQUEST);
-            socketBean.setTime(TimeUtil.getCurrentTime());
-            socketBean.setSendIP(App.sIP);
-            socketBean.setSendName(App.sName);
-            socketBean.setProfilePicture(App.sProfilePicture);
-            socketBean.setReceiveIP(bean.getSendIP());
-            intent.putExtra(SEND_PEER_BEAN, socketBean);
-            startService(intent);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e(TAG, "run: "+bean.getProfilePicture());
+
                     App.getmSocketBeanList().add(bean);
-                    mAdapter.notifyDataSetChanged();
+                    mAdapter.notifyItemInserted(App.getmSocketBeanList().size());
                 }
             });
 
@@ -125,7 +109,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * 接收成功后的回调，如果是连接则显示消息，如果是断开连接则删除对应项
+     * 接收成功后的回调，如果是连接则显示消息
      * @param bean
      */
 
@@ -149,26 +133,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-    @Override
-    public void onSendSuccess(String type,int imageId) {
-
-    }
-
-    /**
-     * 建立连接成功后的回调
-     */
-    @Override
-    public void onSendFail(String type,int id) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainActivity.this, "连接失败", Toast.LENGTH_SHORT).show();
-                LoadingDialogUtil.closeDialog();
-            }
-        });
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_action, menu);
@@ -181,18 +145,14 @@ public class MainActivity extends AppCompatActivity
             case R.id.menu_open:
                 startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS),sOPENWIFI);
                 break;
-            //搜索对等方，先判断是否有网
-            case R.id.menu_search:
-                if (NetWorkUtil.isNetworkConnected(this) && NetWorkUtil.isWifiConnected(this)) {
-                    if (LoadingDialogUtil.createLoadingDialog(MainActivity.this, "正在搜索对等方！")) {
-                        Intent intent = new Intent(MainActivity.this, ScanService.class);
-                        startService(intent);
-                    }
-
-                } else {
-                    Toast.makeText(this, "请打开WiFi连接！", Toast.LENGTH_SHORT).show();
-                }
-                break;
+//            //搜索对等方，先判断是否有网
+//            case R.id.menu_search:
+//                if (!NetWorkUtil.isNetworkConnected(this) && !NetWorkUtil.isWifiConnected(this)) {
+//
+//                } else {
+//                    Toast.makeText(this, "请打开WiFi连接！", Toast.LENGTH_SHORT).show();
+//                }
+ //               break;
         }
         return true;
     }
@@ -201,20 +161,21 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case sOPENWIFI:
-                if (resultCode==RESULT_OK){
-                    App.sIP = ScanDeviceUtil.getLocAddress();
+                if (resultCode==RESULT_OK&& NetWorkUtil.isWifiConnected(MainActivity.this)){
+                    App.sIP = NetIPUtil.getLocAddress();
 
                 }
                 break;
         }
     }
 
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mScanResultReceiver != null) {
-            unregisterReceiver(mScanResultReceiver);
-        }
+    protected void onPause() {
+        super.onPause();
+//        if (mScanResultReceiver != null) {
+//            unregisterReceiver(mScanResultReceiver);
+//        }
 
     }
 

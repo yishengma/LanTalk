@@ -134,7 +134,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
     public void setFilePeerViewHolder(RecyclerView.ViewHolder holder,final SocketBean bean){
         ((FilePeer)holder).mNameTextView.setText(bean.getSendName());
-        Log.e(TAG, "onBindViewHolder: "+bean.getSendName() );
         Glide.with(App.getsContext()).load(bean.getFilePath()).into(((FilePeer)holder).mFileImageView);
         ((FilePeer)holder).mFileImageView.setOnClickListener(new View.OnClickListener() {
             @Override

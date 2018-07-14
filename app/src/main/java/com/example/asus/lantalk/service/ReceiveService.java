@@ -9,18 +9,20 @@ import android.util.Log;
 import com.example.asus.lantalk.app.App;
 import com.example.asus.lantalk.constant.Constant;
 import com.example.asus.lantalk.entity.SocketBean;
+import com.example.asus.lantalk.utils.NetIPUtil;
 import com.example.asus.lantalk.utils.TimeUtil;
+import com.example.asus.lantalk.utils.TransfromUtil;
 
 import java.io.DataInputStream;
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
-import java.io.StreamCorruptedException;
-import java.net.DatagramSocket;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -40,7 +42,8 @@ import static com.example.asus.lantalk.constant.Constant.SERVER_MSG_PORT;
 public class ReceiveService extends Service {
     private ServerSocket mMsgServerSocket;
     private Socket mMsgSocket;
-
+    private MulticastSocket mSocket;
+    private InetAddress mAddress;
     private ServerSocket mFileServerSocket;
     private Socket mFileSocket;
     private ObjectInputStream mObjectInputStream;
@@ -68,9 +71,9 @@ public class ReceiveService extends Service {
     }
 
     public interface OnConnectListener {
-
-        void onRequestCallBack(SocketBean bean);
-
+        //显示新的成员
+        void onConnectCallBack(SocketBean bean);
+        //显示收到的消息
         void onReceiveCallBack(SocketBean bean);
     }
 
@@ -86,7 +89,39 @@ public class ReceiveService extends Service {
 
         initMsgServer();
         initFileServer();
+        initBroadcastServer();
         super.onCreate();
+
+    }
+
+    private void initBroadcastServer(){
+        try {
+            mAddress = InetAddress.getByName(NetIPUtil.getBroadcastIPAddress());
+            mSocket = new MulticastSocket(Constant.SERVER_MULTI_PORT);
+            mSocket.setTimeToLive(Constant.sTTL);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    byte[] buffer = new byte[1024];
+                    DatagramPacket datagramPacket = new DatagramPacket(buffer, 1024);
+                    while (true) {
+                        try {
+                            mSocket.receive(datagramPacket);
+                            SocketBean socketBean = TransfromUtil.ByteToObject(datagramPacket.getData());
+                            if (!socketBean.getSendIP().equals(App.sIP)){
+                                mConnectListener.onConnectCallBack(socketBean);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            }).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -102,7 +137,6 @@ public class ReceiveService extends Service {
                         Object object = mObjectInputStream.readObject();
                         receiveMsg(object);
 
-
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -114,7 +148,6 @@ public class ReceiveService extends Service {
                                 mMsgSocket.close();
                             }
                         }
-
                         if (mDataInputStream != null) {
                             mDataInputStream.close();
                         }
@@ -174,7 +207,7 @@ public class ReceiveService extends Service {
         SocketBean socketBeen = (SocketBean) object;
         //收到链接请求
         if (mConnectListener != null && socketBeen.getStatus() == Constant.REQUEST) {
-            mConnectListener.onRequestCallBack(socketBeen);
+            mConnectListener.onConnectCallBack(socketBeen);
 
             App.getsHistoryMap().put(socketBeen.getSendIP(),new ArrayList<SocketBean>());
 
@@ -198,37 +231,9 @@ public class ReceiveService extends Service {
             }
         }
 
-                //断开消息
-//        }else if (mReceiveListener!=null&&socketBeen.getStatus()==Constant.DISCONNECT){
-//            int i=0;
-//            for (;i<App.getmSocketBeanList().size();i++ ){
-//                if (App.getmSocketBeanList().get(i).getSendIP().equals(socketBeen.getSendIP())){
-//                    break;
-//                }
-//            }
-//            if (App.getmSocketBeanList().size()!=0){
-//                App.getmSocketBeanList().remove(i);
-//            }
-//            mReceiveListener.onReceiveCallBack(socketBeen);
 
 
 
-
-
-
-        //断开消息
-//        }else if (mConnectListener!=null&&socketBeen.getStatus()==Constant.DISCONNECT){
-//            int i=0;
-//            for (;i<App.getmSocketBeanList().size();i++ ){
-//                if (App.getmSocketBeanList().get(i).getSendIP().equals(socketBeen.getSendIP())){
-//                    break;
-//                }
-//            }
-//            if (App.getmSocketBeanList().size()!=0){
-//                App.getmSocketBeanList().remove(i);
-//            }
-//            mConnectListener.onReceiveCallBack(socketBeen);
-//        }
     }
 
     public void receiveFile(Socket socket) throws IOException {

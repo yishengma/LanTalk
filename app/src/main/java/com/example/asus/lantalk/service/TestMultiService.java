@@ -1,11 +1,15 @@
 package com.example.asus.lantalk.service;
 
-import android.app.IntentService;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
+import com.example.asus.lantalk.constant.Constant;
+import com.example.asus.lantalk.entity.SocketBean;
+import com.example.asus.lantalk.utils.NetIPUtil;
+import com.example.asus.lantalk.utils.TransfromUtil;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -17,8 +21,7 @@ import java.net.MulticastSocket;
  */
 
 public class TestMultiService extends Service {
-    public static final String BASE_IP_ADDRESS = "10.21.20.255";
-    public static final int PORT = 3333;
+
     private MulticastSocket mSocket;
     private InetAddress mAddress;
     private static final String TAG = "TestMultiService";
@@ -26,14 +29,9 @@ public class TestMultiService extends Service {
     @Override
     public void onCreate() {
         try {
-            mAddress = InetAddress.getByName(BASE_IP_ADDRESS);
-//            if (!mAddress.isMulticastAddress()) {
-//                throw new Exception("NoMulticast");
-//            }
-
-            mSocket = new MulticastSocket(PORT);
+            mAddress = InetAddress.getByName(NetIPUtil.getBroadcastIPAddress());
+            mSocket = new MulticastSocket(Constant.SERVER_MULTI_PORT);
             mSocket.setTimeToLive(255);
-//            mSocket.joinGroup(mAddress);
             new WorkThread().start();
         } catch (Exception e) {
             e.printStackTrace();
@@ -50,8 +48,9 @@ public class TestMultiService extends Service {
             while (true) {
                 try {
                     mSocket.receive(datagramPacket);
-                    String result = new String(buffer,0,datagramPacket.getLength());
-                    Log.e(TAG, "run: "+result );
+                    SocketBean socketBean = TransfromUtil.ByteToObject(datagramPacket.getData());
+                    Log.e(TAG, "run: "+socketBean.getImageId());
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

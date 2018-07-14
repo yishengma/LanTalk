@@ -81,6 +81,7 @@ public class TalkActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_talk);
         initToolbar();
+        initData();
         initView();
         initListener();
 
@@ -106,14 +107,10 @@ public class TalkActivity extends AppCompatActivity implements
         mRvMsgContent = findViewById(R.id.rv_msg_content);
         mEditText = findViewById(R.id.et_input);
         mSendButton = findViewById(R.id.btn_send);
-        mBeanList = new ArrayList<>();
 
-        for(SocketBean s:App.getsHistoryMap().get(mPeerIP)){
-            s.setSendName(mPeerName);
-            s.setImageStatus(Constant.sSUCCESS);
-            s.setProfilePicture(mPeerPicture);
-        }
-        mBeanList.addAll(App.getsHistoryMap().get(mPeerIP));
+
+
+
         mAdapter = new MessageAdapter(mBeanList);
 
         mRvMsgContent.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -135,7 +132,23 @@ public class TalkActivity extends AppCompatActivity implements
 
     }
 
+    private void initData(){
+        mBeanList = new ArrayList<>();
+        if (App.getsHistoryMap().size()==0){
+            return;
+        }
+        if (App.getsHistoryMap().get(mPeerIP)==null){
+            return;
+        }
 
+        for(SocketBean s:App.getsHistoryMap().get(mPeerIP)){
+            s.setSendName(mPeerName);
+            s.setImageStatus(Constant.sSUCCESS);
+            s.setProfilePicture(mPeerPicture);
+        }
+
+        mBeanList.addAll(App.getsHistoryMap().get(mPeerIP));
+    }
     private void initListener() {
         //发送消息
         mSendButton.setOnClickListener(new View.OnClickListener() {

@@ -5,10 +5,10 @@
         android:id="@+id/menu_open"
         android:title="@string/Openwifi"
         />
-    <item
-        android:id="@+id/menu_search"
-        android:title="@string/searchPeer">
-    </item>
+    <!--<item-->
+        <!--android:id="@+id/menu_search"-->
+        <!--android:title="@string/searchPeer">-->
+    <!--</item>-->
 
 
 

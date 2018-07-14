@@ -46,42 +46,15 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         sCacheDir = getExternalCacheDir();
-
-        Intent intent = new Intent(getApplicationContext(),ReceiveService.class);
-         startService(intent);
          sContext = getApplicationContext();
         sProfilePicture =0;
         sHistoryMap = new HashMap<>();
         mSocketBeanList = new ArrayList<>();
         sImageId = 0;
 
-
-
-
     }
 
 
-
-    @Override
-    public void onTrimMemory(int level) {
-        super.onTrimMemory(level);
-
-//        for (int i=0;i<mSocketBeanList.size();i++){
-//            SocketBean socketBean = new SocketBean();
-//            Intent intent = new Intent(this, SendIntentService.class);
-//            intent.setAction(Constant.ACTION_SEND_MSG);
-//            socketBean.setStatus(Constant.DISCONNECT);
-//            socketBean.setTime(TimeUtil.getCurrentTime());
-//            socketBean.setSendIP(App.sIP);
-//            socketBean.setSendName(App.sName);
-//            socketBean.setProfilePicture(App.sProfilePicture);
-//            socketBean.setReceiveIP(mSocketBeanList.get(i).getSendIP());
-//            intent.putExtra(SEND_PEER_BEAN, socketBean);
-//            startService(intent);
-//        }
-//        mSocketBeanList.clear();
-
-    }
 
     public static List<SocketBean> getmSocketBeanList() {
         return mSocketBeanList;
