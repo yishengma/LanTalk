@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.asus.lantalk">
 
-
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -11,8 +10,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_LOGS" />
-
-
 
     <application
         android:name=".app.App"
@@ -23,22 +20,28 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:theme="@style/MainActivityTheme"
-            android:name=".ui.MainActivity">
+            android:name=".ui.MainActivity"
+            android:theme="@style/MainActivityTheme">
 
         </activity>
 
         <service android:name=".service.ScanService" />
         <service android:name=".service.SendIntentService" />
         <service android:name=".service.ReceiveService" />
+        <service android:name=".service.TestMultiService" />
 
-        <activity android:name=".ui.TalkActivity"
+        <activity
+            android:name=".ui.TalkActivity"
             android:windowSoftInputMode="adjustResize">
 
         </activity>
-        <activity android:name=".ui.LoginActivity"
+        <activity
+            android:name=".ui.LoginActivity"
             android:theme="@style/LoginTheme"
             android:windowSoftInputMode="adjustPan">
+
+        </activity>
+        <activity android:name=".ui.TestMultiActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

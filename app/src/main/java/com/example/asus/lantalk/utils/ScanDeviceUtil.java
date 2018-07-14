@@ -82,23 +82,19 @@ public class ScanDeviceUtil {
 
         // 新建线程池
         for (int i = 2; i < 255; i++) {
-            // 创建256个线程分别去ping
-            final int lastAddress = i;// 存放ip最后一位地址 1-255
+            // 创建254个线程分别去ping
+            final int lastAddress = i;// 存放ip最后一位地址 2-254
             Runnable run = new Runnable() {
 
                 @Override
                 public void run() {
-
-
                     // TODO Auto-generated method stub
                     String ping = mPing + mLocAddress
                             + lastAddress;
                     String currnetIp = mLocAddress + lastAddress;
-                    if (mDevAddress.equals(currnetIp)) // 如果与本机IP地址相同,跳过
+                    if (mDevAddress.equals(currnetIp))
                         return;
-
                     try {
-
                         mProcess = mRun.exec(ping);
                         int result = mProcess.waitFor();
                         Log.d(TAG, "正在扫描的IP地址为：" + currnetIp + "返回值为：" + result);
@@ -114,7 +110,6 @@ public class ScanDeviceUtil {
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "扫描异常" + e.toString());
-
 
                     } finally {
                         if (mProcess != null)
@@ -251,8 +246,7 @@ public class ScanDeviceUtil {
                     os.writeObject(socketBean);
                     os.flush();
                 } catch (IOException e) {
-
-                    Log.e(TAG, "run: "+ip+"3000  端口没开" );
+                    Log.e(TAG, "run: "+ip+"  端口没开" );
                 } finally {
                     if (socket != null) {
                         if (socket.isConnected()) {
