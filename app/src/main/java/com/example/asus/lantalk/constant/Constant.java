@@ -28,12 +28,6 @@ public class Constant {
     public static final int MINEFILE = 2;
     public static final int PEERFILE = 3;
 
-    //Socket  通信的标识
-    public static final int REQUEST = 0;//发送连接请求标识
-    public static final int CONNECT = 2;//通信的标识
-    public static final int DISCONNECT = 4;//断开连接的标识
-
-
     public static final String SERVICE_RECEIVER = "scan";//扫描后台广播的接收
 
 

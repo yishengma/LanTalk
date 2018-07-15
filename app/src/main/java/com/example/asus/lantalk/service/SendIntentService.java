@@ -33,9 +33,9 @@ public class SendIntentService extends IntentService {
     }
 
     public interface OnSendListener {
-        void onSendSuccess(String type,int id);
+        void onSendSuccess(String type, int id);
 
-        void onSendFail(String type,int id);
+        void onSendFail(String type, int id);
     }
 
     public SendIntentService() {
@@ -50,7 +50,7 @@ public class SendIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        if (intent==null||intent.getAction()==null){
+        if (intent == null || intent.getAction() == null) {
             return;
         }
         if (intent.getAction().equals(ACTION_SEND_FILE)) {
@@ -80,31 +80,26 @@ public class SendIntentService extends IntentService {
                     os.writeObject(socketBean);
                     os.flush();
                     if (mSendListener != null) {
-                        mSendListener.onSendSuccess(ACTION_SEND_MSG,0);
+                        mSendListener.onSendSuccess(ACTION_SEND_MSG, 0);
                     }
 
                 } catch (IOException e) {
                     e.printStackTrace();
                     if (mSendListener != null) {
-                        mSendListener.onSendFail(ACTION_SEND_MSG,0);
+                        mSendListener.onSendFail(ACTION_SEND_MSG, 0);
                     }
                 } finally {
-                    if (socket != null) {
+                    try {
                         if (socket.isConnected()) {
-                            try {
-                                socket.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            socket.close();
                         }
-                    }
+                        if (os != null) {
 
-                    if (os != null) {
-                        try {
                             os.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+
                         }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -124,12 +119,10 @@ public class SendIntentService extends IntentService {
                     socket.connect((new InetSocketAddress(socketBean.getReceiveIP(), SERVER_FILE_PORT)), 3000);
 
 
-
                     File file = new File(socketBean.getFilePath());
                     if (file.exists()) {
                         fileInputStream = new FileInputStream(file);
                         dataOutputStream = new DataOutputStream(socket.getOutputStream());
-
 
 
                         byte[] bytes = new byte[1024];
@@ -142,44 +135,30 @@ public class SendIntentService extends IntentService {
 
 
                         if (mSendListener != null) {
-                            mSendListener.onSendSuccess(ACTION_SEND_FILE,socketBean.getImageId());
+                            mSendListener.onSendSuccess(ACTION_SEND_FILE, socketBean.getImageId());
                         }
                     }
-                    } catch(IOException e){
-                        if (mSendListener != null) {
-                            mSendListener.onSendFail(ACTION_SEND_FILE,socketBean.getImageId());
+                } catch (IOException e) {
+                    if (mSendListener != null) {
+                        mSendListener.onSendFail(ACTION_SEND_FILE, socketBean.getImageId());
+                    }
+                } finally {
+                    try {
+                        if (socket.isConnected()) {
+                            socket.close();
                         }
-                    } finally{
-                        if (socket != null) {
-                            if (socket.isConnected()) {
-                                try {
-                                    socket.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-
                         if (fileInputStream != null) {
-                            try {
-                                fileInputStream.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            fileInputStream.close();
                         }
-
                         if (dataOutputStream != null) {
-                            try {
-                                dataOutputStream.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            dataOutputStream.close();
                         }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-
                 }
-            }).
 
-            start();
-        }
+            }
+        }). start();
     }
+}

@@ -27,10 +27,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import static com.example.asus.lantalk.constant.Constant.CONNECT;
+
 import static com.example.asus.lantalk.constant.Constant.PEERFILE;
 
 
+import static com.example.asus.lantalk.constant.Constant.PEERMSG;
 import static com.example.asus.lantalk.constant.Constant.SERVER_FILE_PORT;
 import static com.example.asus.lantalk.constant.Constant.SERVER_MSG_PORT;
 
@@ -50,8 +51,6 @@ public class ReceiveService extends Service {
 
 
     private DataInputStream mDataInputStream = null;
-    private InputStream mInputStream;
-    private OutputStream mOutputStream;
     private FileOutputStream mFileOutputStream = null;
     private static final String TAG = "ReceiveService";
 
@@ -67,13 +66,15 @@ public class ReceiveService extends Service {
     }
 
     public interface OnReceiveListener {
+        //聊天界面收到的消息
         void onReceiveCallBack(SocketBean bean);
     }
 
     public interface OnConnectListener {
         //显示新的成员
         void onConnectCallBack(SocketBean bean);
-        //显示收到的消息
+
+        //显示收到的大致消息
         void onReceiveCallBack(SocketBean bean);
     }
 
@@ -86,49 +87,65 @@ public class ReceiveService extends Service {
 
     @Override
     public void onCreate() {
-
+        super.onCreate();
         initMsgServer();
         initFileServer();
         initBroadcastServer();
-        super.onCreate();
+
 
     }
 
-    private void initBroadcastServer(){
-        try {
-            mAddress = InetAddress.getByName(NetIPUtil.getBroadcastIPAddress());
-            mSocket = new MulticastSocket(Constant.SERVER_MULTI_PORT);
-            mSocket.setTimeToLive(Constant.sTTL);
+    /**
+     * 局域网广播接收器
+     */
+    private void initBroadcastServer() {
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mAddress = InetAddress.getByName(NetIPUtil.getBroadcastIPAddress());
+                    mSocket = new MulticastSocket(Constant.SERVER_MULTI_PORT);
+                    mSocket.setTimeToLive(Constant.sTTL);
                     byte[] buffer = new byte[1024];
                     DatagramPacket datagramPacket = new DatagramPacket(buffer, 1024);
                     while (true) {
-                        try {
-                            mSocket.receive(datagramPacket);
-                            SocketBean socketBean = TransfromUtil.ByteToObject(datagramPacket.getData());
-                            if (!socketBean.getSendIP().equals(App.sIP)){
+                        mSocket.receive(datagramPacket);
+                        SocketBean socketBean = TransfromUtil.ByteToObject(datagramPacket.getData());
+                        String newIP = socketBean.getSendIP();
+                        if (!newIP.equals(App.sIP)&&!App.getsHistoryMap().keySet().contains(newIP)) {
+
+                            App.getsHistoryMap().put(newIP, new ArrayList<SocketBean>());
+                            if (mConnectListener!=null){
                                 mConnectListener.onConnectCallBack(socketBean);
                             }
-                        } catch (IOException e) {
-                            e.printStackTrace();
                         }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
 
+                }
+                if (mSocket.isConnected()) {
+                    if (mSocket != null) {
+                        mSocket.close();
                     }
                 }
-            }).start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+
+            }
+        }).start();
+
 
     }
 
     public void initMsgServer() {
+
+
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 try {
                     mMsgServerSocket = new ServerSocket(SERVER_MSG_PORT);
                     while (true) {
@@ -140,30 +157,27 @@ public class ReceiveService extends Service {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-
                 } finally {
                     try {
-                        if (mMsgSocket.isConnected()) {
-                            if (mMsgSocket != null) {
-                                mMsgSocket.close();
-                            }
-                        }
-                        if (mDataInputStream != null) {
-                            mDataInputStream.close();
-                        }
-                        if (mFileOutputStream != null) {
-                            mFileOutputStream.close();
-                        }
                         if (mObjectInputStream != null) {
                             mObjectInputStream.close();
+                        }
+                        if (!mMsgSocket.isConnected()) {
+                            if (mMsgSocket != null) {
+                                mMsgSocket.close();
+
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
+
             }
         }).start();
+
     }
+
 
     public void initFileServer() {
         new Thread(new Runnable() {
@@ -173,7 +187,18 @@ public class ReceiveService extends Service {
                     mFileServerSocket = new ServerSocket(SERVER_FILE_PORT);
                     while (true) {
                         mFileSocket = mFileServerSocket.accept();
-                        receiveFile(mFileSocket);
+                        File file = new File(App.getsCacheDir(), TimeUtil.getCurrentTime() + "image.jpg");
+                        mFileOutputStream = new FileOutputStream(file);
+                        mDataInputStream = new DataInputStream(mFileSocket.getInputStream());
+
+                        byte[] bytes = new byte[1024];
+                        int length = 0;
+                        while ((length = mDataInputStream.read(bytes, 0, bytes.length)) != -1) {
+                            mFileOutputStream.write(bytes, 0, length);
+                            mFileOutputStream.flush();
+                        }
+                        String ip = ("" + mFileSocket.getInetAddress()).replace("/", "");
+                        receiveFile(ip, file.getAbsolutePath());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -181,18 +206,17 @@ public class ReceiveService extends Service {
 
                 } finally {
                     try {
-                        if (mFileSocket.isConnected()) {
+                        if (!mFileSocket.isConnected()) {
                             if (mFileSocket != null) {
                                 mFileSocket.close();
+
                             }
                         }
-
-                        if (mOutputStream != null) {
-                            mOutputStream.close();
+                        if (mFileOutputStream != null) {
+                            mFileOutputStream.close();
                         }
-
-                        if (mInputStream != null) {
-                            mInputStream.close();
+                        if (mDataInputStream != null) {
+                            mDataInputStream.close();
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -202,74 +226,49 @@ public class ReceiveService extends Service {
         }).start();
     }
 
-    public void receiveMsg(Object object) throws Exception {
-
+    public void receiveMsg(Object object) {
         SocketBean socketBeen = (SocketBean) object;
-        //收到链接请求
-        if (mConnectListener != null && socketBeen.getStatus() == Constant.REQUEST) {
-            mConnectListener.onConnectCallBack(socketBeen);
+        socketBeen.setType(PEERMSG);
+        for (String ip : App.getsHistoryMap().keySet()) {
+            if (ip.equals(socketBeen.getSendIP())) {
+                App.getsHistoryMap().get(ip).add(socketBeen);
 
-            App.getsHistoryMap().put(socketBeen.getSendIP(),new ArrayList<SocketBean>());
-
-            //收到消息
-        } else {
-            for (String ip:App.getsHistoryMap().keySet()) {
-                if (ip.equals(socketBeen.getSendIP())){
-                    App.getsHistoryMap().get(ip).add(socketBeen);
-
-                }
-            }
-
-            if (mReceiveListener != null && socketBeen.getStatus() == Constant.CONNECT) {
-                socketBeen.setType(Constant.PEERMSG);
-                mReceiveListener.onReceiveCallBack(socketBeen);
-            }
-
-            //建立连接
-            if (mConnectListener!=null&& socketBeen.getStatus() == Constant.CONNECT) {
-                mConnectListener.onReceiveCallBack(socketBeen);
             }
         }
+        if (mReceiveListener != null) {
+            mReceiveListener.onReceiveCallBack(socketBeen);
+        }
 
-
+        if (mConnectListener != null) {
+            mConnectListener.onReceiveCallBack(socketBeen);
+        }
 
 
     }
 
-    public void receiveFile(Socket socket) throws IOException {
-        File file = new File(App.getsCacheDir(), TimeUtil.getCurrentTime() + "image.jpg");
-        File dirs = new File(file.getParent());
-        if (!dirs.exists())
-            dirs.mkdirs();
-        file.createNewFile();
-        mFileOutputStream = new FileOutputStream(file);
-        mDataInputStream = new DataInputStream(socket.getInputStream());
+    public void receiveFile(String ip, String filePath) {
 
-        byte[] bytes = new byte[1024];
-        int length = 0;
-        while ((length = mDataInputStream.read(bytes, 0, bytes.length)) != -1) {
-            mFileOutputStream.write(bytes, 0, length);
-            mFileOutputStream.flush();
-        }
+
         SocketBean socketBean = new SocketBean();
-        socketBean.setFilePath(file.getAbsolutePath());
+        socketBean.setFilePath(filePath);
         socketBean.setFile(true);
         socketBean.setType(PEERFILE);
-        socketBean.setSendIP((""+socket.getInetAddress()).replace("/",""));
+        socketBean.setSendIP(ip);
         socketBean.setMessage("[图片]");
-        socketBean.setStatus(CONNECT);
+
         //保存记录
-        for (String ip:App.getsHistoryMap().keySet()) {
-            if (ip.equals(socketBean.getSendIP())){
-                App.getsHistoryMap().get(ip).add(socketBean);
+        for (String peer : App.getsHistoryMap().keySet()) {
+            if (peer.equals(socketBean.getSendIP())) {
+                App.getsHistoryMap().get(peer).add(socketBean);
             }
         }
+
+
         if (mReceiveListener != null) {
-            Log.e(TAG, "receiveFile:mReceiveListener ");
+
             mReceiveListener.onReceiveCallBack(socketBean);
         }
-        if (mConnectListener!=null){
-            Log.e(TAG, "receiveFile:mConnectListener ");
+        if (mConnectListener != null) {
 
             mConnectListener.onReceiveCallBack(socketBean);
         }

@@ -38,9 +38,9 @@ public class App extends Application {
     private static  Context sContext;
     private static File sCacheDir;
     private static Map<String,List<SocketBean>> sHistoryMap;//消息的存储列表
-    public static int sImageId;
+    public static int sImageId;//标识发送的图片
     private static final String TAG = "App";
-    private static List<SocketBean> mSocketBeanList;
+    private static List<SocketBean> mSocketBeanList;//对等方列表
 
     @Override
     public void onCreate() {

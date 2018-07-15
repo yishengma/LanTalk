@@ -29,7 +29,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +40,7 @@ import com.example.asus.lantalk.constant.Constant;
 import com.example.asus.lantalk.entity.SocketBean;
 import com.example.asus.lantalk.service.ReceiveService;
 import com.example.asus.lantalk.service.SendIntentService;
-import com.example.asus.lantalk.utils.ProfilePicturePickUtil;
+
 import com.example.asus.lantalk.utils.TimeUtil;
 
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ import java.util.List;
 
 import static com.example.asus.lantalk.constant.Constant.ACTION_SEND_FILE;
 import static com.example.asus.lantalk.constant.Constant.ACTION_SEND_MSG;
-import static com.example.asus.lantalk.constant.Constant.CONNECT;
+
 import static com.example.asus.lantalk.constant.Constant.MINEFILE;
 import static com.example.asus.lantalk.constant.Constant.MINEMSG;
 import static com.example.asus.lantalk.constant.Constant.SEND_PEER_BEAN;
@@ -88,6 +88,13 @@ public class TalkActivity extends AppCompatActivity implements
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ReceiveService.setReceiveListener(this);
+
+    }
+
     private void initToolbar() {
         mToolbar = findViewById(R.id.tool_bar);
         setSupportActionBar(mToolbar);
@@ -100,10 +107,9 @@ public class TalkActivity extends AppCompatActivity implements
 
     private void initView() {
         mName = findViewById(R.id.tv_name);
-        mPeerName = getIntent().getStringExtra(SEND_PEER_NAME);
+
         mName.setText(mPeerName);
-        mPeerIP = getIntent().getStringExtra(SEND_PEER_BEAN);
-        mPeerPicture = getIntent().getIntExtra(SNED_PEER_PICTURE,0);
+
         mRvMsgContent = findViewById(R.id.rv_msg_content);
         mEditText = findViewById(R.id.et_input);
         mSendButton = findViewById(R.id.btn_send);
@@ -127,17 +133,24 @@ public class TalkActivity extends AppCompatActivity implements
             }
         });
         SendIntentService.setSendListener(this);
-        ReceiveService.setReceiveListener(this);
 
 
     }
 
     private void initData(){
+        mPeerName = getIntent().getStringExtra(SEND_PEER_NAME);
+        mPeerIP = getIntent().getStringExtra(SEND_PEER_BEAN);
+        mPeerPicture = getIntent().getIntExtra(SNED_PEER_PICTURE,0);
+
+
         mBeanList = new ArrayList<>();
         if (App.getsHistoryMap().size()==0){
+
             return;
         }
         if (App.getsHistoryMap().get(mPeerIP)==null){
+
+
             return;
         }
 
@@ -163,7 +176,7 @@ public class TalkActivity extends AppCompatActivity implements
                     mSocketBean.setSendName(App.sName);
                     mSocketBean.setTime(TimeUtil.getCurrentTime());
                     intent.setAction(Constant.ACTION_SEND_MSG);
-                    mSocketBean.setStatus(Constant.CONNECT);
+
                     mSocketBean.setType(Constant.MINEMSG);
                     mSocketBean.setProfilePicture(App.sProfilePicture);
                     intent.putExtra(SEND_PEER_BEAN, mSocketBean);
@@ -224,7 +237,6 @@ public class TalkActivity extends AppCompatActivity implements
                     mSocketBean.setSendName(App.sName);
                     mSocketBean.setSendIP(App.sIP);
                     mSocketBean.setProfilePicture(App.sProfilePicture);
-                    mSocketBean.setStatus(CONNECT);
                     mSocketBean.setType(MINEFILE);
                     mSocketBean.setImageId(App.sImageId++);
                     mSocketBean.setImageStatus(Constant.sSENDING);
@@ -249,16 +261,13 @@ public class TalkActivity extends AppCompatActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (bean.getStatus()==Constant.CONNECT) {
+                Log.e(TAG, "run: " );
                     bean.setSendName(mPeerName);
                     bean.setProfilePicture(mPeerPicture);
                     mBeanList.add(bean);
                     mAdapter.notifyDataSetChanged();
                     mRvMsgContent.smoothScrollToPosition(mAdapter.getItemCount() - 1);
-                }
-//                }else if (bean.getStatus()==Constant.DISCONNECT){
-//                     showDialog();
-//                }
+
             }
         });
     }
@@ -273,7 +282,7 @@ public class TalkActivity extends AppCompatActivity implements
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                 if (mSocketBean!=null&&(mSocketBean.getStatus()==Constant.CONNECT||mSocketBean.getStatus()==Constant.REQUEST)){
+                 if (mSocketBean!=null){
                      mSocketBean.setType(MINEMSG);
                      mBeanList.add(mSocketBean);
                      mAdapter.notifyDataSetChanged();
@@ -338,23 +347,6 @@ public class TalkActivity extends AppCompatActivity implements
     }
 
 
-    /**
-     * 返回对话框的显示
-     */
-    private void showDialog(){
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setIcon(ProfilePicturePickUtil.getImageDrawable(getIntent().getIntExtra(SNED_PEER_PICTURE,0)))//设置标题的图片
-                .setTitle(getIntent().getStringExtra(SEND_PEER_NAME))//设置对话框的标题
-                .setMessage("已退出！")//设置对话框的内容
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                        dialog.dismiss();
-                    }
-                }).create();
-        dialog.show();
-    }
 
     public static void actionStart(Context context, String address, String name,int picture) {
         Intent intent = new Intent(context, TalkActivity.class);
@@ -404,10 +396,10 @@ public class TalkActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
+        Log.e(TAG, "onPause: " );
         //需要将接口置为 null ,否则 Activity 可能不在Top
         ReceiveService.setReceiveListener(null);
-
     }
 }

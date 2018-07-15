@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.asus.lantalk.app.App;
 import com.example.asus.lantalk.constant.Constant;
@@ -17,9 +18,8 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 /**
- * Created by asus on 18-7-14.
+ * 发送局域网广播，数据为 ip 地址，昵称， 头像标识
  */
-
 public class BroadcastService extends Service {
     private MulticastSocket mSocket;
     private DatagramPacket mDatagramPacket;
@@ -80,10 +80,11 @@ public class BroadcastService extends Service {
           while(true){
               try {
                   mSocket.send(mDatagramPacket);
+
                   sleep(5000);
               } catch (Exception e) {
                   e.printStackTrace();
-                  break;
+
               }
 
           }
